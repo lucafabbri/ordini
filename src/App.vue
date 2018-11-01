@@ -1,28 +1,26 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <div class="uk-container">
+      <h1 class="uk-margin-remove-bottom"><img class="uk-border-circle" width="50" height="50" src="./assets/zepfiro-icon-square-color.png">Zepfiro, modulo ordine web</h1>
+      <Ordine />
+    </div>
+    <footer class="uk-margin">
+      <div class="uk-container">Copyright ©{{ new Date().getFullYear() }} Higrow Srl</div>
+    </footer>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import Ordine from './components/Ordine.vue';
 
 export default {
   name: 'app',
   components: {
-    HelloWorld
+    Ordine
   }
 }
 </script>
 
-<style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+<style lang="less">
+@import "../node_modules/uikit/src/less/uikit.less";
 </style>

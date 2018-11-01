@@ -8,6 +8,9 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "less": "^3.8.1",
+    "less-loader": "^4.1.0",
+    "uikit": "^3.0.0-rc.20",
     "vue": "^2.5.17"
   },
   "devDependencies": {
