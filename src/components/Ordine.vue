@@ -2,62 +2,62 @@
     <form class="uk-form-stacked">
             <div class="uk-flex uk-flex-right">
                 <small>
-                    <span v-if="anagrafica.azienda">{{anagrafica.azienda}}</span>
-                    <span v-if="anagrafica.referente && anagrafica.azienda">, </span>
-                    <span v-if="anagrafica.referente">{{anagrafica.referente}}</span>
-                    <span v-if="anagrafica.telefono || anagrafica.email"> (</span>
-                    <span v-if="anagrafica.telefono">t: {{anagrafica.telefono}}</span>
-                    <span v-if="anagrafica.telefono && anagrafica.email">, </span>
-                    <span v-if="anagrafica.email">e: {{anagrafica.email}}</span>
-                    <span v-if="anagrafica.telefono || anagrafica.email">)</span><br>
+                    <span v-if="ordine.anagrafica.azienda">{{ordine.anagrafica.azienda}}</span>
+                    <span v-if="ordine.anagrafica.referente && ordine.anagrafica.azienda">, </span>
+                    <span v-if="ordine.anagrafica.referente">{{ordine.anagrafica.referente}}</span>
+                    <span v-if="ordine.anagrafica.telefono || ordine.anagrafica.email"> (</span>
+                    <span v-if="ordine.anagrafica.telefono">t: {{ordine.anagrafica.telefono}}</span>
+                    <span v-if="ordine.anagrafica.telefono && ordine.anagrafica.email">, </span>
+                    <span v-if="ordine.anagrafica.email">e: {{ordine.anagrafica.email}}</span>
+                    <span v-if="ordine.anagrafica.telefono || ordine.anagrafica.email">)</span><br>
                 </small>
             </div>
             <div>
                 <div class="uk-margin-medium-top uk-margin-medium-right">
                     <h2 class="uk-heading-divider">Anagrafica cliente<em>*</em></h2>
-                    <Anagrafica class="uk-accordion-content" :input="anagrafica" />
+                    <Anagrafica class="uk-accordion-content" :input="ordine.anagrafica" />
                 </div>
             </div>
             <div>
                 <div class="uk-margin-medium-top uk-margin-medium-right">
                     <h2 class="uk-heading-divider">Informazioni sul progetto<em>*</em></h2>
-                    <Progetto class="uk-accordion-content" :input="progetto" />
+                    <Progetto class="uk-accordion-content" :input="ordine.progetto" />
                 </div>
             </div>
-            <div v-if="progetto.isDomain || progetto.isHosting || progetto.isExchange">
+            <div v-if="ordine.progetto.isDomain || ordine.progetto.isHosting || ordine.progetto.isExchange">
                 <div class="uk-margin-medium-top uk-margin-medium-right">
                     <h2 class="uk-heading-divider">Hosting e Domini</h2>
-                    <WebHosting class="uk-accordion-content" :input="webhosting" :progetto="progetto" />
+                    <WebHosting class="uk-accordion-content" :input="ordine.webhosting" :progetto="ordine.progetto" />
                 </div>
             </div>
-            <div v-if="progetto.isWeb">
+            <div v-if="ordine.progetto.isWeb">
                 <div class="uk-margin-medium-top uk-margin-medium-right">
                     <h2 class="uk-heading-divider">Sito web </h2>
-                    <WebDesign class="uk-accordion-content" :input="webdesign" :progetto="progetto" />
+                    <WebDesign class="uk-accordion-content" :input="ordine.webdesign" :progetto="ordine.progetto" />
                 </div>
             </div>
-            <div v-if="progetto.isEcommerce">
+            <div v-if="ordine.progetto.isEcommerce">
                 <div class="uk-margin-medium-top uk-margin-medium-right">
                     <h2 class="uk-heading-divider">E-commerce</h2>
-                    <Ecommerce class="uk-accordion-content" :input="ecommerce" :progetto="progetto" />
+                    <Ecommerce class="uk-accordion-content" :input="ordine.ecommerce" :progetto="ordine.progetto" />
                 </div>
             </div>
-            <div v-if="progetto.isSEO">
+            <div v-if="ordine.progetto.isSEO">
                 <div class="uk-margin-medium-top uk-margin-medium-right">
                     <h2 class="uk-heading-divider">SEO</h2>
-                    <Seo class="uk-accordion-content" :input="seo" :progetto="progetto" />
+                    <Seo class="uk-accordion-content" :input="ordine.seo" :progetto="ordine.progetto" />
                 </div>
             </div>
-            <div v-if="progetto.isSocial">
+            <div v-if="ordine.progetto.isSocial">
                 <div class="uk-margin-medium-top uk-margin-medium-right">
                     <h2 class="uk-heading-divider">Social Media</h2>
-                    <SocialMedia class="uk-accordion-content" :input="socialmedia" :progetto="progetto" />
+                    <SocialMedia class="uk-accordion-content" :input="ordine.socialmedia" :progetto="ordine.progetto" />
                 </div>
             </div>
-            <div v-if="progetto.isMainteneance"> 
+            <div v-if="ordine.progetto.isMainteneance"> 
                 <div class="uk-margin-medium-top uk-margin-medium-right">
                     <h2 class="uk-heading-divider">Manutenzione </h2>
-                    <Mainteneance class="uk-accordion-content" :input="mainteneance" :progetto="progetto" />
+                    <Mainteneance class="uk-accordion-content" :input="ordine.mainteneance" :progetto="ordine.progetto" />
                 </div>
             </div>
             <div class="uk-flex uk-flex-left uk-margin-medium-top">
@@ -71,6 +71,13 @@
                     <br>
                     <strong v-if="formulaZero>0">Offerta formula zero: </strong>
                     <span v-if="formulaZero>0">{{formatPrice(formulaZero)}}€/mese <small> ({{formatPrice(formulaZero*12)}}€/anno)</small></span>
+                    <span v-if="(formulaZero>0)&&seo_totalpermonth"> + </span>
+                    <span v-if="(formulaZero>0)&&seo_totalpermonth">Seo: {{formatPrice(seo_totalpermonth)}}€/mese</span>
+                </p>
+            </div>
+            <div class="uk-flex uk-flex-left uk-margin-medium-top">
+                <p>
+                  <button v-if="total||totalperyear" type="button" class="uk-button uk-button-primary" v-on:click="saveOrder()"><span uk-icon="icon: push"></span>  Salva preventivo</button>
                 </p>
             </div>
         </form>
@@ -86,6 +93,7 @@ import Seo from "./Seo.vue";
 import SocialMedia from "./SocialMedia.vue";
 import Graphics from "./Graphics.vue";
 import Mainteneance from "./Mainteneance.vue";
+import axios from "axios/dist/axios";
 
 export default {
   name: "Ordine",
@@ -98,7 +106,8 @@ export default {
     Seo,
     SocialMedia,
     Graphics,
-    Mainteneance
+    Mainteneance,
+    axios
   },
   data: function() {
     return {
@@ -164,6 +173,7 @@ export default {
           }
         }
       },
+      ordine:{
       anagrafica: {
         azienda: "",
         referente: "",
@@ -231,13 +241,14 @@ export default {
         isOrdinaria: false,
         isPerfettiva: false
       }
+      }
     };
   },
   watch: {
     progetto: {
       isExchange: function(val) {
-        if (this.webhosting.hosting.mailbox.isCaselle && val) {
-          this.webhosting.hosting.mailbox.isCaselle = !val;
+        if (this.ordine.webhosting.hosting.mailbox.isCaselle && val) {
+          this.ordine.webhosting.hosting.mailbox.isCaselle = !val;
         }
       }
     },
@@ -245,8 +256,8 @@ export default {
       hosting: {
         mailbox: {
           isCaselle: function(val) {
-            if (this.progetto.isExchange && val) {
-              this.progetto.isExchange = !val;
+            if (this.ordine.progetto.isExchange && val) {
+              this.ordine.progetto.isExchange = !val;
             }
           }
         }
@@ -255,21 +266,21 @@ export default {
   },
   computed: {
     webhosting_domain_qty: function() {
-      if (this.webhosting.domain.names == "") {
+      if (this.ordine.webhosting.domain.names == "") {
         return 0;
       }
-      return this.webhosting.domain.names.split(",").length;
+      return this.ordine.webhosting.domain.names.split(",").length;
     },
     webhosting_domain_total: function() {
       return 0;
     },
     webhosting_domain_totalperyear: function() {
-      return this.progetto.isDomain
+      return this.ordine.progetto.isDomain
         ? this.pricelist.domain.price * this.webhosting_domain_qty
         : 0;
     },
     webhosting_hosting_host_total: function() {
-      return this.progetto.isHosting
+      return this.ordine.progetto.isHosting
         ? this.webhosting_domain_qty > 1
           ? this.pricelist.hosting.multihost.price
           : this.pricelist.hosting.host.price
@@ -279,49 +290,49 @@ export default {
       return 0;
     },
     webhosting_hosting_mailbox_totalperyear: function() {
-      return this.webhosting.hosting.mailbox.isCaselle
+      return this.ordine.webhosting.hosting.mailbox.isCaselle
         ? this.pricelist.hosting.mailbox.price *
-            parseInt(this.webhosting.hosting.mailbox.qty)
+            parseInt(this.ordine.webhosting.hosting.mailbox.qty)
         : 0;
     },
     webhosting_hosting_mailbox_total: function() {
       return 0;
     },
     webhosting_hosting_total: function() {
-      return this.progetto.isHosting
+      return this.ordine.progetto.isHosting
         ? this.webhosting_hosting_host_total +
             this.webhosting_hosting_mailbox_total
         : 0;
     },
     webhosting_hosting_totalperyear: function() {
-      return this.progetto.isHosting
+      return this.ordine.progetto.isHosting
         ? this.webhosting_hosting_host_totalperyear +
             this.webhosting_hosting_mailbox_totalperyear
         : 0;
     },
     webhosting_exchange_setup_total: function() {
-      return this.progetto.isExchange ? this.pricelist.exchange.setup.price : 0;
+      return this.ordine.progetto.isExchange ? this.pricelist.exchange.setup.price : 0;
     },
     webhosting_exchange_setup_totalperyear: function() {
       return 0;
     },
     webhosting_exchange_mailuser_totalperyear: function() {
-      return this.progetto.isExchange
+      return this.ordine.progetto.isExchange
         ? this.pricelist.exchange.mailuser.price *
-            parseInt(this.webhosting.exchange.mailuser.qty)
+            parseInt(this.ordine.webhosting.exchange.mailuser.qty)
         : 0;
     },
     webhosting_exchange_mailuser_total: function() {
       return 0;
     },
     webhosting_exchange_total: function() {
-      return this.progetto.isExchange
+      return this.ordine.progetto.isExchange
         ? this.webhosting_exchange_setup_total +
             this.webhosting_exchange_mailuser_total
         : 0;
     },
     webhosting_exchange_totalperyear: function() {
-      return this.progetto.isExchange
+      return this.ordine.progetto.isExchange
         ? this.webhosting_exchange_setup_totalperyear +
             this.webhosting_exchange_mailuser_totalperyear
         : 0;
@@ -341,10 +352,10 @@ export default {
       );
     },
     webdesign_setup_total: function() {
-      return this.progetto.isWeb
+      return this.ordine.progetto.isWeb
         ? this.pricelist.webdesign.setup.price +
-            (this.progetto.isMultilanguage
-              ? parseInt(this.progetto.languages.qty) *
+            (this.ordine.progetto.isMultilanguage
+              ? parseInt(this.ordine.progetto.languages.qty) *
                 this.pricelist.webdesign.language.price
               : 0)
         : 0;
@@ -354,15 +365,15 @@ export default {
     },
     webdesign_modules_qty: function() {
       return (
-        (this.webdesign.hasBlog ? 1 : 0) +
-        (this.webdesign.hasPortfolio ? 1 : 0) +
-        (this.webdesign.hasJob ? 1 : 0) +
-        (this.webdesign.hasEvents ? 1 : 0) +
-        (this.webdesign.hasNewsletter ? 1 : 0)
+        (this.ordine.webdesign.hasBlog ? 1 : 0) +
+        (this.ordine.webdesign.hasPortfolio ? 1 : 0) +
+        (this.ordine.webdesign.hasJob ? 1 : 0) +
+        (this.ordine.webdesign.hasEvents ? 1 : 0) +
+        (this.ordine.webdesign.hasNewsletter ? 1 : 0)
       );
     },
     webdesign_modules_total: function() {
-      return this.progetto.isWeb
+      return this.ordine.progetto.isWeb
         ? this.pricelist.webdesign.module.price * this.webdesign_modules_qty
         : 0;
     },
@@ -370,9 +381,9 @@ export default {
       return 0;
     },
     webdesign_pages_total: function() {
-      return this.progetto.isWeb
-        ? parseInt(this.webdesign.pages.qty) > 4
-          ? (parseInt(this.webdesign.pages.qty) - 4) *
+      return this.ordine.progetto.isWeb
+        ? parseInt(this.ordine.webdesign.pages.qty) > 4
+          ? (parseInt(this.ordine.webdesign.pages.qty) - 4) *
             this.pricelist.webdesign.page.price
           : 0
         : 0;
@@ -381,8 +392,8 @@ export default {
       return 0;
     },
     webdesign_contents_total: function() {
-      return this.progetto.isWeb
-        ? parseInt(this.webdesign.contents.qty) *
+      return this.ordine.progetto.isWeb
+        ? parseInt(this.ordine.webdesign.contents.qty) *
             this.pricelist.webdesign.content.price
         : 0;
     },
@@ -390,15 +401,15 @@ export default {
       return 0;
     },
     webdesign_translations_qty: function() {
-      return this.progetto.isMultilanguage
-        ? parseInt(this.progetto.languages.qty) *
-            (parseInt(this.webdesign.pages.qty) +
-              parseInt(this.webdesign.contents.qty) +
+      return this.ordine.progetto.isMultilanguage
+        ? parseInt(this.ordine.progetto.languages.qty) *
+            (parseInt(this.ordine.webdesign.pages.qty) +
+              parseInt(this.ordine.webdesign.contents.qty) +
               parseInt(this.webdesign_modules_qty))
         : 0;
     },
     webdesign_translations_total: function() {
-      return this.progetto.isWeb && this.progetto.isMultilanguage
+      return this.ordine.progetto.isWeb && this.ordine.progetto.isMultilanguage
         ? this.webdesign_translations_qty *
             this.pricelist.webdesign.translation.price
         : 0;
@@ -407,7 +418,7 @@ export default {
       return 0;
     },
     webdesign_total: function() {
-      return this.progetto.isWeb
+      return this.ordine.progetto.isWeb
         ? this.webdesign_setup_total +
             this.webdesign_modules_total +
             this.webdesign_pages_total +
@@ -416,7 +427,7 @@ export default {
         : 0;
     },
     webdesign_totalperyear: function() {
-      return this.progetto.isWeb
+      return this.ordine.progetto.isWeb
         ? this.webdesign_setup_totalperyear +
             this.webdesign_modules_totalperyear +
             this.webdesign_pages_totalperyear +
@@ -426,7 +437,7 @@ export default {
     },
     privacy_licenses_qty: function() {
       return (
-        parseInt(this.progetto.languages.qty) +
+        parseInt(this.ordine.progetto.languages.qty) +
         (this.webhosting_domain_qty > 0 ? this.webhosting_domain_qty : 1)
       );
     },
@@ -434,12 +445,12 @@ export default {
       return 0;
     },
     privacy_licenses_totalperyear: function() {
-      return this.progetto.isPrivacy
+      return this.ordine.progetto.isPrivacy
         ? this.pricelist.privacy.iubenda.price * this.privacy_licenses_qty
         : 0;
     },
     privacy_setup_total: function() {
-      return this.progetto.isPrivacy ? this.pricelist.privacy.setup.price : 0;
+      return this.ordine.progetto.isPrivacy ? this.pricelist.privacy.setup.price : 0;
     },
     privacy_setup_totalperyear: function() {
       return 0;
@@ -453,16 +464,16 @@ export default {
       );
     },
     ecommerce_total: function() {
-      return this.progetto.isEcommerce
+      return this.ordine.progetto.isEcommerce
         ? this.pricelist.ecommerce.setup.price +
-            this.pricelist.ecommerce.module.price * this.ecommerce.modules +
+            this.pricelist.ecommerce.module.price * this.ordine.ecommerce.modules +
             this.pricelist.ecommerce.marketplace.price *
-              this.ecommerce.marketplaces +
+              this.ordine.ecommerce.marketplaces +
             this.pricelist.ecommerce.perproduct.price *
-              this.ecommerce.products +
-            (this.ecommerce.isDataEntry
+              this.ordine.ecommerce.products +
+            (this.ordine.ecommerce.isDataEntry
               ? this.pricelist.ecommerce.dataentry.price *
-                this.ecommerce.products
+                this.ordine.ecommerce.products
               : 0)
         : 0;
     },
@@ -470,27 +481,27 @@ export default {
       return 0;
     },
     seo_total: function() {
-      return this.progetto.isSEO ? this.pricelist.seo.setup.price : 0;
+      return this.ordine.progetto.isSEO ? this.pricelist.seo.setup.price : 0;
     },
     seo_totalpermonth: function() {
       var discount =
-        this.seo.keywords * 2 < 40 ? (100 - this.seo.keywords * 2) / 100 : 0.6;
-      return this.progetto.isSEO
-        ? this.seo.keywords *
+        this.ordine.seo.keywords * 2 < 40 ? (100 - this.ordine.seo.keywords * 2) / 100 : 0.6;
+      return this.ordine.progetto.isSEO
+        ? this.ordine.seo.keywords *
             Math.floor(this.pricelist.seo.keyword.price * discount)
         : 0;
     },
     socialmedia_qty: function() {
       return (
-        (this.socialmedia.isGoogle ? 1 : 0) +
-        (this.socialmedia.isFacebook ? 1 : 0) +
-        (this.socialmedia.isLinkedin ? 1 : 0) +
-        (this.socialmedia.isInstagram ? 1 : 0) +
-        (this.socialmedia.isPinterest ? 1 : 0)
+        (this.ordine.socialmedia.isGoogle ? 1 : 0) +
+        (this.ordine.socialmedia.isFacebook ? 1 : 0) +
+        (this.ordine.socialmedia.isLinkedin ? 1 : 0) +
+        (this.ordine.socialmedia.isInstagram ? 1 : 0) +
+        (this.ordine.socialmedia.isPinterest ? 1 : 0)
       );
     },
     socialmedia_total: function() {
-      return this.progetto.isSocial
+      return this.ordine.progetto.isSocial
         ? this.pricelist.socialmedia.setup.price +
             this.pricelist.socialmedia.platform.price * this.socialmedia_qty
         : 0;
@@ -499,7 +510,7 @@ export default {
       return 0;
     },
     graphics_total: function() {
-      return this.progetto.isGraphics
+      return this.ordine.progetto.isGraphics
         ? this.pricelist.graphics.logo.setup.price
         : 0;
     },
@@ -510,17 +521,17 @@ export default {
       return 0;
     },
     mainteneance_totalperyear: function() {
-      if (this.mainteneance.isOrdinaria) {
+      if (this.ordine.mainteneance.isOrdinaria) {
         return this.pricelist.mainteneance.web.base.price;
       }
-      if (this.mainteneance.isOrdinaria && this.progetto.isEcommerce) {
-        return this.pricelist.mainteneance.ecommerce.base.price;
+      if (this.ordine.mainteneance.isOrdinaria && this.ordine.progetto.isEcommerce) {
+        return this.pricelist.mainteneance.ordine.ecommerce.base.price;
       }
-      if (this.mainteneance.isPerfettiva) {
+      if (this.ordine.mainteneance.isPerfettiva) {
         return this.pricelist.mainteneance.web.pro.price;
       }
-      if (this.mainteneance.isPerfettiva && this.progetto.isEcommerce) {
-        return this.pricelist.mainteneance.ecommerce.pro.price;
+      if (this.ordine.mainteneance.isPerfettiva && this.ordine.progetto.isEcommerce) {
+        return this.pricelist.mainteneance.ordine.ecommerce.pro.price;
       }
       return 0;
     },
@@ -551,14 +562,14 @@ export default {
       var result = 0;
       if (
         !(
-          this.progetto.isDomain ||
-          this.progetto.isHosting ||
-          this.progetto.isExchange ||
-          this.progetto.isWeb ||
-          this.progetto.isEcommerce ||
-          this.progetto.isSocial ||
-          this.progetto.isGraphics ||
-          this.progetto.isMainteneance
+          this.ordine.progetto.isDomain ||
+          this.ordine.progetto.isHosting ||
+          this.ordine.progetto.isExchange ||
+          this.ordine.progetto.isWeb ||
+          this.ordine.progetto.isEcommerce ||
+          this.ordine.progetto.isSocial ||
+          this.ordine.progetto.isGraphics ||
+          this.ordine.progetto.isMainteneance
         )
       ) {
         return 0;
@@ -583,13 +594,22 @@ export default {
   },
   methods: {
     setMailSystem: function(isExchange) {
-      this.webhosting.hosting.mailbox.isCaselle =
-        !isExchange && this.webhosting.hosting.mailbox.isCaselle;
-      this.progetto.isExchange = isExchange && this.progetto.isExchange;
+      this.ordine.webhosting.hosting.mailbox.isCaselle =
+        !isExchange && this.ordine.webhosting.hosting.mailbox.isCaselle;
+      this.ordine.progetto.isExchange = isExchange && this.ordine.progetto.isExchange;
     },
     formatPrice: function(value) {
       let val = (value / 1).toFixed(2).replace(".", ",");
       return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    },
+    saveOrder: function(){
+      axios.post('https://api.ordini.zepfiro.com/ordini',this.ordine)
+      .then(function (response) {
+        console.log(response);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
     }
   }
 };
