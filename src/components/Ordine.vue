@@ -603,7 +603,7 @@ export default {
       return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     },
     saveOrder: function(){
-      axios.post('https://api.ordini.zepfiro.com/ordini',this.ordine)
+      axios.post('https://api.ordini.zepfiro.com/ordini',JSON.stringify(this.ordine))
       .then(function (response) {
         console.log(response);
       })
