@@ -603,12 +603,13 @@ export default {
       return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     },
     saveOrder: function(){
-      axios.post('https://api.ordini.zepfiro.com/ordini',JSON.stringify(this.ordine))
+      var order = this.ordine;
+      axios.post('https://api.ordini.zepfiro.com/ordini',{"ordine":JSON.stringify(order)})
       .then(function (response) {
         console.log(response);
       })
       .catch(function (error) {
-        console.log(error);
+        console.log('Payload: '+JSON.stringify(order)+', Error: '+error);
       });
     }
   }
