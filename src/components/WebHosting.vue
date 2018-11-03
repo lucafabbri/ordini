@@ -7,8 +7,8 @@
                 <input class="uk-input" v-model="webhosting.domain.names" type="text" placeholder="Nome dominio" pattern="^\s*(?:(?:\w+(?:-+\w+)*\.)+[a-z]+)\s*(?:,\s*(?:(?:\w+(?:-+\w+)*\.)+[a-z]+)\s*)*$">
             </div>
         </div>
-        <div v-if="progetto.isHosting && !progetto.isExchange" class="uk-width-1-1">
-            <button type="button" v-bind:class="[ webhosting.hosting.mailbox.isCaselle ? 'uk-button-primary': 'uk-button-default' ]" v-on:click="toggleIsCaselle()" class="uk-button uk-margin-top uk-margin-right">
+        <div v-if="progetto.isHosting" class="uk-width-1-1">
+            <button type="button" v-bind:class="[ webhosting.hosting.mailbox.isCaselle ? 'uk-button-primary': 'uk-button-default' ]" v-on:click="toggleIsCaselle()" class="uk-button uk-margin-top uk-margin-right" :disabled="progetto.isExchange">
                 <span v-if="!webhosting.hosting.mailbox.isCaselle" uk-icon="icon: plus-circle"></span> 
                 <span v-if="webhosting.hosting.mailbox.isCaselle" uk-icon="icon: minus-circle"></span> 
                 Caselle di posta aggiuntive <small>da 9,90€/anno a casella</small>
@@ -45,9 +45,6 @@ export default {
         },
         toggleIsCaselle: function(){
             this.webhosting.hosting.mailbox.isCaselle = !this.webhosting.hosting.mailbox.isCaselle;
-            if(this.webhosting.hosting.mailbox.isCaselle&&this.progetto.isExchange){
-                this.progetto.isExchange=false;
-            }
         },
     }
 }
