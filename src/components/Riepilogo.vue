@@ -2,7 +2,7 @@
     <div>
         <div class="uk-background-secondary uk-padding" uk-sticky>
             <router-link :to="{ name: 'ElencoOrdini'}" class="uk-button uk-button-default"><span uk-icon="icon: list"></span>  Elenco</router-link>
-            <router-link :to="{ name: 'ModificaOrdine', params: { id: $route.params.id }}" class="uk-button uk-button-default"><span uk-icon="icon: file-edit"></span>  Modifica</router-link>
+            <router-link :to="{ name: 'Ordine', params: { id: $route.params.id }}" class="uk-button uk-button-default"><span uk-icon="icon: file-edit"></span>  Modifica</router-link>
             <button type="button" class="uk-button uk-button-default" v-on:click="print()"><span uk-icon="icon: file-pdf"></span>  Stampa PDF</button>
         </div>
         <div class="uk-padding">
@@ -62,18 +62,13 @@
             <h3>Web design</h3>
             <div class="uk-grid-small" uk-grid>
                 <div>N° <strong>1</strong></div>
-                <div class="uk-width-expand" uk-leader> Design sito web (1 bozza + 2 revisioni) 4 pagine incluse</div>
+                <div class="uk-width-expand" uk-leader> Design sito web (1 bozza + 2 revisioni)</div>
                 <div>€{{formatPrice(ordine.webdesign.setup.total)}}</div>
             </div>
             <div class="uk-grid-small" uk-grid>
-                <div>N° <strong>{{ordine.webdesign.pages.qty}}</strong></div>
-                <div class="uk-width-expand" uk-leader> Pagine principali</div>
-                <div><span v-if="ordine.webdesign.pages.qty<=4">incluse</span><span v-else>€{{formatPrice(ordine.webdesign.pages.total)}}</span></div>
-            </div>
-            <div v-if="ordine.webdesign.contents.qty>0" class="uk-grid-small" uk-grid>
-                <div>N° <strong>{{ordine.webdesign.contents.qty}}</strong></div>
-                <div class="uk-width-expand" uk-leader> Pagine secondarie</div>
-                <div>€{{formatPrice(ordine.webdesign.contents.total)}}</div>
+                <div>N° <strong>{{parseInt(ordine.webdesign.pages.qty)+parseInt(ordine.webdesign.contents.qty)}}</strong></div>
+                <div class="uk-width-expand" uk-leader> Pagine totali</div>
+                <div>€{{formatPrice(ordine.webdesign.pages.total+ordine.webdesign.contents.total)}}</div>
             </div>
             <div v-if="ordine.webdesign.hasBlog||ordine.webdesign.hasPortfolio||ordine.webdesign.hasJob||ordine.webdesign.hasEvents||ordine.webdesign.hasNewsletter" class="uk-grid-small" uk-grid>
                 <div>N° <strong>{{ordine.webdesign.modules.qty}}</strong></div>
@@ -173,7 +168,7 @@
             </div>
             <div class="uk-padding-small"></div>
         </div>
-        <div>
+        <div v-bind:class="{ 'uk-hidden': !ordine.progetto.isSocial}">
             <h3>Social Media</h3>
             <div v-if="ordine.socialmedia.qty>0" class="uk-grid-small" uk-grid>
                 <div>N° <strong>{{ordine.socialmedia.qty}}</strong></div>

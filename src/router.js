@@ -13,13 +13,8 @@ export default new Router({
       component: Ordini
     },
     {
-      path: '/ordine/nuovo',
-      name: 'NuovoOrdine',
-      component: Ordine
-    },
-    {
       path: '/ordine/:id',
-      name: 'ModificaOrdine',
+      name: 'Ordine',
       component: Ordine
     },
     {

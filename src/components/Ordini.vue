@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="uk-background-secondary uk-padding" uk-sticky>
-            <router-link :to="{ name: 'NuovoOrdine'}" class="uk-button uk-button-default"><span uk-icon="icon: plus"></span>  Nuovo ordine/preventivo</router-link>
+            <router-link :to="{ name: 'Ordine'}" class="uk-button uk-button-default"><span uk-icon="icon: plus"></span>  Nuovo ordine/preventivo</router-link>
         </div>
         <div class="uk-padding">
         <ul class="uk-list uk-list-divider">
@@ -9,7 +9,7 @@
                 <h4 v-if="ordine.ordine.progetto!=undefined">{{ordine.ordine.progetto.titolo}}</h4>
                 <p v-if="ordine.ordine.progetto!=undefined">{{ordine.ordine.progetto.descrizione}}</p>
                 <ul v-if="!ordine.deleting" class="uk-iconnav">
-                    <li><router-link :to="{ name: 'ModificaOrdine', params: { id: ordine.id }}" uk-icon="icon: file-edit"> Modifica</router-link></li>
+                    <li><router-link :to="{ name: 'Ordine', params: { id: ordine.id }}" uk-icon="icon: file-edit"> Modifica</router-link></li>
                     <li><router-link :to="{ name: 'RiepilogoOrdine', params: { id: ordine.id }}" uk-icon="icon: file-text"> Riepilogo</router-link></li>
                     <li><a v-on:click="eliminaOrdine(ordine)" uk-icon="icon: trash"> Elimina</a></li>
                 </ul>

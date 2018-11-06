@@ -57,14 +57,13 @@
     <div class="uk-flex uk-flex-left uk-margin-medium-top">
       <p class="uk-text-lead">
         <strong v-if="total||totalperyear">Totale: </strong>
-        <span v-if="total">{{formatPrice(total)}}€</span>
-        <span v-if="total&&totalperyear"> + </span>
-        <span v-if="totalperyear">{{formatPrice(totalperyear)}}€/anno</span>
+        <span v-if="total">{{formatPrice(total+totalperyear)}}€</span>
+        <span v-if="totalperyear"> (di cui {{formatPrice(totalperyear)}}€/anno)</span>
         <span v-if="(total||totalperyear)&&seo_totalpermonth"> + </span>
         <span v-if="seo_totalpermonth">Seo: {{formatPrice(seo_totalpermonth)}}€/mese</span>
         <br>
         <strong v-if="formulaZero>0">Offerta formula zero: </strong>
-        <span v-if="formulaZero>0">{{formatPrice(formulaZero)}}€/mese <small> ({{formatPrice(formulaZero*12)}}€/anno)</small></span>
+        <span v-if="formulaZero>0">{{formatPrice(formulaZero)}}€/mese</span>
         <span v-if="(formulaZero>0)&&seo_totalpermonth"> + </span>
         <span v-if="(formulaZero>0)&&seo_totalpermonth">Seo: {{formatPrice(seo_totalpermonth)}}€/mese</span>
       </p>
@@ -85,11 +84,13 @@ import Seo from "./Seo.vue";
 import SocialMedia from "./SocialMedia.vue";
 import Graphics from "./Graphics.vue";
 import Mainteneance from "./Mainteneance.vue";
+import router from "../router";
 
 export default {
   name: "Ordine",
   components: {
     axios,
+    router,
     Anagrafica,
     Progetto,
     WebHosting,
@@ -424,8 +425,8 @@ export default {
     },
     webdesign_pages_total: function() {
       return (this.ordine.webdesign.pages.total = this.ordine.progetto.isWeb
-        ? parseInt(this.ordine.webdesign.pages.qty) > 4
-          ? (parseInt(this.ordine.webdesign.pages.qty) - 4) *
+        ? parseInt(this.ordine.webdesign.pages.qty) > 3
+          ? (parseInt(this.ordine.webdesign.pages.qty) - 3) *
             this.pricelist.webdesign.page.price
           : 0
         : 0);
@@ -435,8 +436,10 @@ export default {
     },
     webdesign_contents_total: function() {
       return (this.ordine.webdesign.contents.total = this.ordine.progetto.isWeb
-        ? parseInt(this.ordine.webdesign.contents.qty) *
-          this.pricelist.webdesign.content.price
+        ? parseInt(this.ordine.webdesign.contents.qty) > 3
+          ? (parseInt(this.ordine.webdesign.contents.qty) - 3) *
+            this.pricelist.webdesign.content.price
+          : 0
         : 0);
     },
     webdesign_contents_totalperyear: function() {
@@ -570,13 +573,12 @@ export default {
         : 0);
     },
     socialmedia_qty: function() {
-      return this.ordine.socialmedia.qty = (
+      return (this.ordine.socialmedia.qty =
         (this.ordine.socialmedia.isGoogle ? 1 : 0) +
-          (this.ordine.socialmedia.isFacebook ? 1 : 0) +
-          (this.ordine.socialmedia.isLinkedin ? 1 : 0) +
-          (this.ordine.socialmedia.isInstagram ? 1 : 0) +
-          (this.ordine.socialmedia.isPinterest ? 1 : 0)
-      );
+        (this.ordine.socialmedia.isFacebook ? 1 : 0) +
+        (this.ordine.socialmedia.isLinkedin ? 1 : 0) +
+        (this.ordine.socialmedia.isInstagram ? 1 : 0) +
+        (this.ordine.socialmedia.isPinterest ? 1 : 0));
     },
     socialmedia_total: function() {
       return (this.ordine.socialmedia.total = this.ordine.progetto.isSocial
@@ -657,19 +659,11 @@ export default {
         return 0;
       }
       var coefficente =
-        this.total + this.totalperyear < 15000
-          ? 2 - 0.8 * ((this.totalperyear + this.total) / 15000)
-          : 1.2;
+        this.total + this.totalperyear < 10000
+          ? 1.2 + 0.8 * ((this.totalperyear + this.total) / 10000)
+          : 2;
       var permonth = (this.totalperyear + this.total / coefficente) / 12;
-      if (permonth < 150) {
-        result = 149;
-      } else if (permonth >= 200 && permonth < 250) {
-        result = 249;
-      } else if (permonth >= 300 && permonth < 350) {
-        result = 349;
-      } else {
-        result = Math.ceil(permonth / 100) * 100 - 1;
-      }
+      result = Math.ceil(permonth / 10) * 10 - 1;
 
       return (this.ordine.formulaZero =
         result * 10 < this.totalperyear + this.total ? result : 0);
@@ -683,7 +677,6 @@ export default {
     saveOrder: function() {
       const vm = this;
       vm.saving = true;
-      console.log(JSON.stringify(this.ordine));
       if (this.isEdit) {
         axios
           .put("https://api.ordini.zepfiro.com/ordini/" + vm.ordineId, {
@@ -696,14 +689,14 @@ export default {
             vm.saving = false;
           });
       } else {
-        console.log(JSON.stringify(vm.ordine));
         axios
           .post("https://api.ordini.zepfiro.com/ordini", {
             ordine: JSON.stringify(vm.ordine)
           })
           .then(function(response) {
             vm.saving = false;
-            vm.ordineId = response.data.id;
+            vm.ordineId = response.data[0].id;
+            router.push({ path: "/ordine/" + vm.ordineId });
           })
           .catch(function(error) {
             vm.saving = false;
@@ -711,8 +704,8 @@ export default {
       }
     },
     getOrdine: function(id) {
-      this.isEdit = true;
       const vm = this;
+      this.isEdit = true;
 
       axios
         .get("https://api.ordini.zepfiro.com/ordini/" + id)
