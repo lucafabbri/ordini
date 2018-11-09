@@ -1,19 +1,29 @@
 <template>
     <div>
         <div class="uk-background-secondary uk-padding" uk-sticky>
-            <router-link :to="{ name: 'Ordine'}" class="uk-button uk-button-default"><span uk-icon="icon: plus"></span>  Nuovo ordine/preventivo</router-link>
+            <img src="https://www.zepfiro.com/wp-content/uploads/2018/08/zepfiro-logo-or-or-white.png" style="width:150px; max-width:150px;">
+            <router-link :to="{ name: 'Ordine', params:{id:'nuovo'}}" class="uk-button uk-button-default"><span uk-icon="icon: plus"></span>  Nuovo ordine/preventivo</router-link>
         </div>
         <div class="uk-padding">
         <ul class="uk-list uk-list-divider">
             <li v-for="ordine in ordini">
-                <h4 v-if="ordine.ordine.progetto!=undefined">{{ordine.ordine.progetto.titolo}}</h4>
-                <p v-if="ordine.ordine.progetto!=undefined">{{ordine.ordine.progetto.descrizione}}</p>
-                <ul v-if="!ordine.deleting" class="uk-iconnav">
-                    <li><router-link :to="{ name: 'Ordine', params: { id: ordine.id }}" uk-icon="icon: file-edit"> Modifica</router-link></li>
-                    <li><router-link :to="{ name: 'RiepilogoOrdine', params: { id: ordine.id }}" uk-icon="icon: file-text"> Riepilogo</router-link></li>
-                    <li><a v-on:click="eliminaOrdine(ordine)" uk-icon="icon: trash"> Elimina</a></li>
-                </ul>
-                <div v-else uk-spinner></div>
+                <div uk-grid>
+                    <div class="uk-width-auto">
+                        <h4>#{{ordine.id}} </h4>
+                    </div>    
+                    <div class="uk-width-expand">
+                        <h4 v-if="ordine.ordine.progetto!=undefined">[{{ordine.ordine.fileid}}] - {{ordine.ordine.progetto.titolo}}</h4>
+                        <p v-if="ordine.ordine.progetto!=undefined">{{ordine.ordine.progetto.descrizione}}</p>
+                    </div>
+                    <div class="uk-width-auto">
+                        <ul v-if="!ordine.deleting" class="uk-iconnav">
+                            <li><router-link :to="{ name: 'Ordine', params: { id: ordine.id }}" uk-icon="icon: file-edit"> Modifica</router-link></li>
+                            <li><router-link :to="{ name: 'RiepilogoOrdine', params: { id: ordine.id }}" uk-icon="icon: file-text"> Riepilogo</router-link></li>
+                            <li><a v-on:click="eliminaOrdine(ordine)" uk-icon="icon: trash"> Elimina</a></li>
+                        </ul>
+                        <div v-else uk-spinner></div>
+                    </div>
+                </div>
             </li>
         </ul>
         </div>
@@ -36,6 +46,7 @@ export default {
   },
   created: async function() {
       await this.getOrdini();
+      this.$parent.title = 'Elenco ordini';
   },
   methods: {
     formatPrice: function(value) {

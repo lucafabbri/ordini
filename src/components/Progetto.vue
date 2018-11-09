@@ -14,39 +14,43 @@
                 <button type="button" v-bind:class="[ progetto.isDomain ? 'uk-button-primary': 'uk-button-default' ]" v-on:click="toggleIsDomain()" class="uk-button uk-button-small uk-margin-top uk-margin-right">
                 <span v-if="!progetto.isDomain" uk-icon="icon: plus-circle"></span> 
                 <span v-if="progetto.isDomain" uk-icon="icon: minus-circle"></span> 
-                Dominio <small>da 9,90 €/Anno</small></button>
+                Dominio</button>
                 <button type="button" v-bind:class="[ progetto.isHosting ? 'uk-button-primary': 'uk-button-default' ]" v-on:click="toggleIsHosting()" class="uk-button uk-button-small uk-margin-top uk-margin-right">
                 <span v-if="!progetto.isHosting" uk-icon="icon: plus-circle"></span> 
                 <span v-if="progetto.isHosting" uk-icon="icon: minus-circle"></span> 
-                Hosting <small>da 39,90 €/Anno</small></button>
+                Hosting </button>
                 <button type="button" v-bind:class="[ progetto.isExchange ? 'uk-button-primary': 'uk-button-default' ]" v-on:click="toggleIsExchange()" class="uk-button uk-button-small uk-margin-top uk-margin-right">
                 <span v-if="!progetto.isExchange" uk-icon="icon: plus-circle"></span> 
                 <span v-if="progetto.isExchange" uk-icon="icon: minus-circle"></span> 
-                Exchange <small>da 299€</small></button>
+                Exchange</button>
                 <button type="button" v-bind:class="[ progetto.isWeb ? 'uk-button-primary': 'uk-button-default' ]" v-on:click="toggleIsWeb()" class="uk-button uk-button-small uk-margin-top uk-margin-right">
                 <span v-if="!progetto.isWeb" uk-icon="icon: plus-circle"></span> 
                 <span v-if="progetto.isWeb" uk-icon="icon: minus-circle"></span> 
-                Sito web <small>da 599€</small></button>
+                Sito web</button>
                 <button type="button" v-bind:class="[ progetto.isEcommerce ? 'uk-button-primary': 'uk-button-default' ]" v-on:click="toggleIsEcommerce()" class="uk-button uk-button-small uk-margin-top uk-margin-right">
                 <span v-if="!progetto.isEcommerce" uk-icon="icon: plus-circle"></span> 
                 <span v-if="progetto.isEcommerce" uk-icon="icon: minus-circle"></span> 
-                Ecommerce <small>da 799€</small></button>
+                Ecommerce</button>
                 <button type="button" v-bind:class="[ progetto.isSEO ? 'uk-button-primary': 'uk-button-default' ]" v-on:click="toggleIsSEO()" class="uk-button uk-button-small uk-margin-top uk-margin-right">
                 <span v-if="!progetto.isSEO" uk-icon="icon: plus-circle"></span> 
                 <span v-if="progetto.isSEO" uk-icon="icon: minus-circle"></span> 
-                SEO <small>da 299€</small></button>
+                SEO</button>
                 <button type="button" v-bind:class="[ progetto.isSocial ? 'uk-button-primary': 'uk-button-default' ]" v-on:click="toggleIsSocial()" class="uk-button uk-button-small uk-margin-top uk-margin-right">
                 <span v-if="!progetto.isSocial" uk-icon="icon: plus-circle"></span> 
                 <span v-if="progetto.isSocial" uk-icon="icon: minus-circle"></span> 
-                Social <small>da 99€</small></button>
-                <button type="button" v-bind:class="[ progetto.isGraphics ? 'uk-button-primary': 'uk-button-default' ]" v-on:click="toggleIsGraphics()" class="uk-button uk-button-small uk-margin-top uk-margin-right">
-                <span v-if="!progetto.isGraphics" uk-icon="icon: plus-circle"></span> 
-                <span v-if="progetto.isGraphics" uk-icon="icon: minus-circle"></span> 
-                Logo <small>da 299€</small></button>
+                Social</button>
+                <button type="button" v-bind:class="[ progetto.isLogo ? 'uk-button-primary': 'uk-button-default' ]" v-on:click="toggleIsLogo()" class="uk-button uk-button-small uk-margin-top uk-margin-right">
+                <span v-if="!progetto.isLogo" uk-icon="icon: plus-circle"></span> 
+                <span v-if="progetto.isLogo" uk-icon="icon: minus-circle"></span> 
+                Logo</button>
+                <button type="button" v-bind:class="[ progetto.isCoordinato ? 'uk-button-primary': 'uk-button-default' ]" v-on:click="toggleIsCoordinato()" class="uk-button uk-button-small uk-margin-top uk-margin-right">
+                <span v-if="!progetto.isCoordinato" uk-icon="icon: plus-circle"></span> 
+                <span v-if="progetto.isCoordinato" uk-icon="icon: minus-circle"></span> 
+                Coordinato</button>
                 <button type="button" v-bind:class="[ progetto.isMainteneance ? 'uk-button-primary': 'uk-button-default' ]" v-on:click="toggleIsMainteneance()" class="uk-button uk-button-small uk-margin-top uk-margin-right">
                 <span v-if="!progetto.isMainteneance" uk-icon="icon: plus-circle"></span> 
                 <span v-if="progetto.isMainteneance" uk-icon="icon: minus-circle"></span> 
-                Manutenzione <small>da 499€/Anno</small></button>
+                Manutenzione</button>
             </div>
         </div>
         <div v-if="progetto.isWeb || progetto.isPrivacy" class="uk-width-1-2">
@@ -102,8 +106,11 @@ export default {
         toggleIsSocial: function(){
             this.progetto.isSocial=!this.progetto.isSocial;
         },
-        toggleIsGraphics: function(){
-            this.progetto.isGraphics=!this.progetto.isGraphics;
+        toggleIsLogo: function(){
+            this.progetto.isLogo=!this.progetto.isLogo;
+        },
+        toggleIsCoordinato: function(){
+            this.progetto.isCoordinato=!this.progetto.isCoordinato;
         },
         toggleIsMainteneance: function(){
             this.progetto.isMainteneance=!this.progetto.isMainteneance;

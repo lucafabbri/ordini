@@ -1,9 +1,11 @@
 <template>
 <div>
   <div class="uk-background-secondary uk-padding" uk-sticky>
+            <img src="https://www.zepfiro.com/wp-content/uploads/2018/08/zepfiro-logo-or-or-white.png" style="width:150px; max-width:150px;">
        <button v-if="total||totalperyear" type="button" class="uk-button uk-button-primary" v-on:click="saveOrder()"><span uk-icon="icon: push"></span>  Salva preventivo</button>
     <router-link :to="{ name: 'ElencoOrdini'}" class="uk-button uk-button-default"><span uk-icon="icon: list"></span>  Elenco</router-link>
        <router-link :to="{ name: 'RiepilogoOrdine', params: { id: ordineId }}" v-if="ordineId!=0"  class="uk-button uk-button-default"><span uk-icon="icon: file-text"></span>  Riepilogo</router-link>
+       <span v-if="ordine.fileid">{{ordine.fileid}}</span>
   </div>
   <form class="uk-form-stacked uk-padding">
     <div>
@@ -102,13 +104,15 @@ export default {
     Mainteneance
   },
   created: async function() {
-    if (this.$route.params.id) {
+    if (this.$route.params.id && this.$route.params.id != "nuovo") {
       this.ordineId = this.$route.params.id;
       await this.getOrdine(this.$route.params.id);
+      this.$parent.title = "Crea o Modifica Ordine";
     }
   },
   data: function() {
     return {
+      date:Date.now(),
       pricelist: {
         domain: { price: 9.9, recurrent: true, frequency: "year" },
         hosting: {
@@ -153,6 +157,9 @@ export default {
             setup: { price: 299, recurrent: false, frequency: "" },
             revision: { price: 99, recurrent: false, frequency: "" }
           },
+          coordinato: {
+            setup: { price: 999, recurrent: false, frequency: "" }
+          },
           copy: { price: 69, recurrent: false, frequency: "" },
           stockphoto: { price: 69, recurrent: false, frequency: "" },
           shooting: {
@@ -194,7 +201,8 @@ export default {
           isEcommerce: false,
           isSEO: false,
           isSocial: false,
-          isGraphics: false,
+          isLogo: false,
+          isCoordinato: false,
           isMainteneance: false
         },
         webhosting: {
@@ -245,11 +253,15 @@ export default {
         socialmedia: {
           isGoogle: false,
           isFacebook: false,
+          isYoutube: false,
           isLinkedin: false,
           isInstagram: false,
           isPinterest: false
         },
-        graphics: {},
+        graphics: {
+          logo: {},
+          coordinato: {}
+        },
         mainteneance: {
           isOrdinaria: false,
           isPerfettiva: false
@@ -559,7 +571,10 @@ export default {
     },
     seo_total: function() {
       return (this.ordine.seo.total = this.ordine.progetto.isSEO
-        ? this.pricelist.seo.setup.price
+        ? this.ordine.progetto.isMultilanguage
+          ? parseInt(this.ordine.progetto.languages.qty) +
+            1 * this.pricelist.seo.setup.price
+          : this.pricelist.seo.setup.price
         : 0);
     },
     seo_totalpermonth: function() {
@@ -578,6 +593,7 @@ export default {
         (this.ordine.socialmedia.isFacebook ? 1 : 0) +
         (this.ordine.socialmedia.isLinkedin ? 1 : 0) +
         (this.ordine.socialmedia.isInstagram ? 1 : 0) +
+        (this.ordine.socialmedia.isYoutube ? 1 : 0) +
         (this.ordine.socialmedia.isPinterest ? 1 : 0));
     },
     socialmedia_total: function() {
@@ -589,10 +605,20 @@ export default {
     socialmedia_totalperyear: function() {
       return 0;
     },
-    graphics_total: function() {
-      return (this.ordine.graphics.total = this.ordine.progetto.isGraphics
+    graphics_logo_total: function() {
+      return (this.ordine.graphics.logo.total = this.ordine.progetto.isLogo
         ? this.pricelist.graphics.logo.setup.price
         : 0);
+    },
+    graphics_coordinato_total: function() {
+      return (this.ordine.graphics.coordinato.total = this.ordine.progetto
+        .isCoordinato
+        ? this.pricelist.graphics.coordinato.setup.price
+        : 0);
+    },
+    graphics_total: function() {
+      return (this.ordine.graphics.total =
+        this.graphics_logo_total + this.graphics_coordinato_total);
     },
     graphics_totalperyear: function() {
       return 0;
@@ -652,7 +678,7 @@ export default {
           this.ordine.progetto.isWeb ||
           this.ordine.progetto.isEcommerce ||
           this.ordine.progetto.isSocial ||
-          this.ordine.progetto.isGraphics ||
+          this.ordine.progetto.isLogo ||
           this.ordine.progetto.isMainteneance
         )
       ) {
@@ -678,6 +704,11 @@ export default {
       const vm = this;
       vm.saving = true;
       if (this.isEdit) {
+        this.ordine.fileid = this.calculateFileId();
+        this.ordine.updatedAt = Date.now();
+        if (this.ordine.createdAt == null) {
+          this.ordine.createdAt = this.ordine.updatedAt;
+        }
         axios
           .put("https://api.ordini.zepfiro.com/ordini/" + vm.ordineId, {
             ordine: JSON.stringify(vm.ordine)
@@ -689,6 +720,8 @@ export default {
             vm.saving = false;
           });
       } else {
+        this.ordine.createdAt = Date.now();
+        this.ordine.fileid = this.calculateFileId();
         axios
           .post("https://api.ordini.zepfiro.com/ordini", {
             ordine: JSON.stringify(vm.ordine)
@@ -703,6 +736,30 @@ export default {
           });
       }
     },
+    calculateFileId: function() {
+      var version = "01";
+      if (this.isEdit && this.ordine.fileid != null) {
+        var fid = this.ordine.fileid.split("-");
+        version = this.formatZeroNumber(parseInt(fid[fid.length - 1])+1);
+        console.log(fid[fid.length - 1]);
+        console.log(version);
+      }
+      return (
+        "FOZ-" +
+        this.ordine.anagrafica.azienda.toUpperCase().slice(0, 3) +
+        "-" +
+        this.date.getFullYear() +
+        "-" +
+        this.formatZeroNumber(this.date.getMonth() + 1) +
+        "-" +
+        this.formatZeroNumber(this.date.getUTCDate()) +
+        "-" +
+        version
+      );
+    },
+    formatZeroNumber: function(number) {
+      return ("0" + number).slice(-2);
+    },
     getOrdine: function(id) {
       const vm = this;
       this.isEdit = true;
@@ -710,6 +767,8 @@ export default {
       axios
         .get("https://api.ordini.zepfiro.com/ordini/" + id)
         .then(function(response) {
+          vm.date = new Date(parseInt(response.data.ordine.createdAt));
+          vm.ordine.fileid = response.data.ordine.fileid;
           vm.ordine.anagrafica.azienda =
             response.data.ordine.anagrafica.azienda;
           vm.ordine.anagrafica.referente =
@@ -736,8 +795,9 @@ export default {
             response.data.ordine.progetto.isEcommerce;
           vm.ordine.progetto.isSEO = response.data.ordine.progetto.isSEO;
           vm.ordine.progetto.isSocial = response.data.ordine.progetto.isSocial;
-          vm.ordine.progetto.isGraphics =
-            response.data.ordine.progetto.isGraphics;
+          vm.ordine.progetto.isLogo = response.data.ordine.progetto.isLogo;
+          vm.ordine.progetto.isCoordinato =
+            response.data.ordine.progetto.isCoordinato;
           vm.ordine.progetto.isMainteneance =
             response.data.ordine.progetto.isMainteneance;
           vm.ordine.webhosting.domain.names =
@@ -783,6 +843,8 @@ export default {
             response.data.ordine.socialmedia.isFacebook;
           vm.ordine.socialmedia.isLinkedin =
             response.data.ordine.socialmedia.isLinkedin;
+          vm.ordine.socialmedia.isYoutube =
+            response.data.ordine.socialmedia.isYoutube;
           vm.ordine.socialmedia.isInstagram =
             response.data.ordine.socialmedia.isInstagram;
           vm.ordine.socialmedia.isPinterest =

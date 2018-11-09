@@ -8,7 +8,10 @@ import router from './router'
 UIkit.use(Icons);
 
 Vue.config.productionTip = false
-
+Vue.directive('title', {
+  inserted: (el, binding) => document.title = binding.value,
+  update: (el, binding) => document.title = binding.value
+});
 new Vue({
   store,
   router,

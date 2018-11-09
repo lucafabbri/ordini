@@ -4,11 +4,11 @@
             <div v-if="progetto.isWeb" class="uk-margin-large">
                 <div class="uk-margin-large">
                     <label class="uk-form-label">Numero di pagine principali (199€/pagina)
-                    <input class="uk-range" type="range" v-model="webdesign.pages.qty" value="4" min="4" max="20" step="1"> <strong>{{webdesign.pages.qty}}</strong></label>
+                    <input class="uk-range" type="range" v-model="webdesign.pages.qty" value="3" min="3" max="20" step="1"> <strong>{{webdesign.pages.qty}}</strong></label>
                 </div>
                 <div class="uk-margin-large">
                     <label class="uk-form-label">Numero di pagine secondarie  (99€/contenuto) (portfolio, servizi, progetti, case studies, prodotti)
-                    <input class="uk-range" type="range" v-model="webdesign.contents.qty" value="0" min="0" max="100" step="5"> <strong>{{webdesign.contents.qty}}</strong></label>
+                    <input class="uk-range" type="range" v-model="webdesign.contents.qty" value="3" min="3" max="100" step="1"> <strong>{{webdesign.contents.qty}}</strong></label>
                 </div>
                 <div class="uk-margin-large" uk-grid>
                     <div class="uk-width-1-1">

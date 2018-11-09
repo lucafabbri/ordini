@@ -1,461 +1,372 @@
 <template>
     <div>
-        <div class="uk-background-secondary uk-padding" uk-sticky>
+        
+        <div class="uk-background-secondary uk-padding noprint">
+            <img src="https://www.zepfiro.com/wp-content/uploads/2018/08/zepfiro-logo-or-or-white.png" style="width:150px; max-width:150px;">
             <router-link :to="{ name: 'ElencoOrdini'}" class="uk-button uk-button-default"><span uk-icon="icon: list"></span>  Elenco</router-link>
             <router-link :to="{ name: 'Ordine', params: { id: $route.params.id }}" class="uk-button uk-button-default"><span uk-icon="icon: file-edit"></span>  Modifica</router-link>
             <button type="button" class="uk-button uk-button-default" v-on:click="print()"><span uk-icon="icon: file-pdf"></span>  Stampa PDF</button>
         </div>
         <div class="uk-padding">
-        <div>
-            <h5 class="uk-text-right" v-if="ordine.anagrafica.azienda">{{ordine.anagrafica.azienda}}</h5>
-            <p class="uk-text-right">
-                <small>
-                <span v-if="ordine.anagrafica.referente">{{ordine.anagrafica.referente}}<br></span>
-                <span v-if="ordine.anagrafica.telefono">t: {{ordine.anagrafica.telefono}}</span>
-                <span v-if="ordine.anagrafica.telefono && ordine.anagrafica.email"><br></span>
-                <span v-if="ordine.anagrafica.email">e: {{ordine.anagrafica.email}}</span>
-                </small>
-            </p>
-        </div>
-        <div class="uk-margin-large-bottom">
-            <h1>{{ordine.progetto.titolo}}</h1>
-            <p class="uk-text-lead">{{ordine.progetto.descrizione}}</p>
-        </div>
-        <div v-bind:class="{ 'uk-hidden': !(ordine.progetto.isDomain || ordine.progetto.isHosting || ordine.progetto.isExchange)}">
-            <h3>Hosting, domini e mail</h3>
-            <div v-if="ordine.progetto.isDomain && ordine.webhosting.domain.totalperyear>0" class="uk-grid-small" uk-grid>
-                <div>N° <strong>{{ordine.webhosting.domain.qty}}</strong></div>
-                <div class="uk-width-expand" uk-leader> Registrazione/Trasferimento dominio ({{ordine.webhosting.domain.names}})</div>
-                <div>€{{formatPrice(ordine.webhosting.domain.totalperyear)}}/anno</div>
-            </div>
-            <div v-if="ordine.progetto.isHosting && ordine.webhosting.hosting.host.totalperyear>0" class="uk-grid-small" uk-grid>
-                <div>N° <strong>1</strong></div>
-                <div class="uk-width-expand" uk-leader> Hosting web <span v-if="ordine.webhosting.domain.qty==1">Singolo Dominio</span><span v-else>Multidominio</span></div>
-                <div>€{{formatPrice(ordine.webhosting.hosting.host.totalperyear)}}/anno</div>
-            </div>
-            <div v-if="ordine.webhosting.hosting.mailbox.isCaselle && ordine.webhosting.hosting.mailbox.qty>0" class="uk-grid-small" uk-grid>
-                <div>N° <strong>{{ordine.webhosting.hosting.mailbox.qty}}</strong></div>
-                <div class="uk-width-expand" uk-leader> Caselle di posta standard IMAP,POP3,SMTP </div>
-                <div>€{{formatPrice(ordine.webhosting.hosting.mailbox.totalperyear)}}/anno</div>
-            </div>
-            <div v-if="ordine.progetto.isExchange && ordine.webhosting.exchange.total>0" class="uk-grid-small" uk-grid>
-                <div>N° <strong>1</strong></div>
-                <div class="uk-width-expand" uk-leader> Setup una tantum Microsoft Exchange </div>
-                <div>€{{formatPrice(ordine.webhosting.exchange.total)}}</div>
-            </div>
-            <div v-if="ordine.progetto.isExchange && ordine.webhosting.exchange.mailuser.qty>0" class="uk-grid-small" uk-grid>
-                <div>N° <strong>{{ordine.webhosting.exchange.mailuser.qty}}</strong></div>
-                <div class="uk-width-expand" uk-leader> Account di posta Microsoft Exchange </div>
-                <div>€{{formatPrice(ordine.webhosting.exchange.totalperyear)}}/anno</div>
-            </div>
-            <div v-if="ordine.progetto.isDomain || ordine.progetto.isHosting || ordine.progetto.isExchange" class="uk-grid-small uk-margin-left uk-margin-bottom" uk-grid>
-                <div class="uk-width-expand" uk-leader><strong> Totale per domini, hosting e email </strong></div>
-                <div><strong>
-                    <span v-if="ordine.webhosting.total>0">€{{formatPrice(ordine.webhosting.total)}}</span>
-                    <span v-if="ordine.webhosting.total>0&&ordine.webhosting.totalperyear>0"> + </span>
-                    <span v-if="ordine.webhosting.totalperyear>0">€{{formatPrice(ordine.webhosting.totalperyear)}}/anno</span></strong>
-                </div>
-            </div>
-            <div class="uk-padding-small"></div>
-        </div>
-        <div v-bind:class="{ 'uk-hidden': !ordine.progetto.isWeb}">
-            <h3>Web design</h3>
-            <div class="uk-grid-small" uk-grid>
-                <div>N° <strong>1</strong></div>
-                <div class="uk-width-expand" uk-leader> Design sito web (1 bozza + 2 revisioni)</div>
-                <div>€{{formatPrice(ordine.webdesign.setup.total)}}</div>
-            </div>
-            <div class="uk-grid-small" uk-grid>
-                <div>N° <strong>{{parseInt(ordine.webdesign.pages.qty)+parseInt(ordine.webdesign.contents.qty)}}</strong></div>
-                <div class="uk-width-expand" uk-leader> Pagine totali</div>
-                <div>€{{formatPrice(ordine.webdesign.pages.total+ordine.webdesign.contents.total)}}</div>
-            </div>
-            <div v-if="ordine.webdesign.hasBlog||ordine.webdesign.hasPortfolio||ordine.webdesign.hasJob||ordine.webdesign.hasEvents||ordine.webdesign.hasNewsletter" class="uk-grid-small" uk-grid>
-                <div>N° <strong>{{ordine.webdesign.modules.qty}}</strong></div>
-                <div class="uk-width-expand" uk-leader> Moduli aggiuntivi ({{ordine.webdesign.modules.names}})</div>
-                <div>€{{formatPrice(ordine.webdesign.modules.total)}}</div>
-            </div>
-            <div v-if="ordine.webdesign.translations.total>0" class="uk-grid-small" uk-grid>
-                <div>N° <strong>{{ordine.webdesign.translations.qty}}</strong></div>
-                <div class="uk-width-expand" uk-leader> Traduzione contenuti in {{ordine.progetto.languages.qty}} lingue (pagine principali + pagine secondarie + moduli)</div>
-                <div>€{{formatPrice(ordine.webdesign.translations.total)}}</div>
-            </div>
-            <div class="uk-grid-small uk-margin-left uk-margin-bottom" uk-grid>
-                <div class="uk-width-expand" uk-leader><strong> Totale per design sito web </strong></div>
-                <div>
-                    <strong><span v-if="ordine.webdesign.total>0">€{{formatPrice(ordine.webdesign.total)}}</span></strong>
-                </div>
-            </div>
-            <div class="uk-padding-small"></div>
-        </div>
-        <div v-bind:class="{ 'uk-hidden': !ordine.progetto.isPrivacy}">
-            <h3>Privacy</h3>
-            <div class="uk-grid-small" uk-grid>
-                <div>N° <strong>{{ordine.privacy.licenses.qty}}</strong></div>
-                <div class="uk-width-expand" uk-leader> Privacy e Cookie policy by Iubenda {{parseInt(ordine.progetto.languages.qty)+1}} lingue / {{ordine.webhosting.domain.qty}} domini</div>
-                <div>€{{formatPrice(ordine.privacy.total)}} + €{{formatPrice(ordine.privacy.totalperyear)}}/anno</div>
-            </div>
-            <div class="uk-grid-small uk-margin-left uk-margin-bottom" uk-grid>
-                <div class="uk-width-expand" uk-leader><strong> Totale per privacy e cookie</strong></div>
-                <div>
-                    <strong><span>€{{formatPrice(ordine.privacy.total)}} + €{{formatPrice(ordine.privacy.totalperyear)}}/anno</span></strong>
-                </div>
-            </div>
-            <div class="uk-padding-small"></div>
-        </div>
-        <div v-bind:class="{ 'uk-hidden': !ordine.progetto.isEcommerce}">
-            <h3>Ecommerce</h3>
-            <div class="uk-grid-small" uk-grid>
-                <div>N° <strong>1</strong></div>
-                <div class="uk-width-expand" uk-leader> Setup piattaforma di E-commerce (Gestione Ordini, Carrello, Chekout, Spedizione, Cassa, Area ordini)</div>
-                <div>€{{formatPrice(ordine.ecommerce.setup.total)}}</div>
-            </div>
-            <div v-if="ordine.ecommerce.modules.qty>0" class="uk-grid-small" uk-grid>
-                <div>N° <strong>{{ordine.ecommerce.modules.qty}}</strong></div>
-                <div class="uk-width-expand" uk-leader> Moduli aggiuntivi </div>
-                <div>€{{formatPrice(ordine.ecommerce.modules.total)}}</div>
-            </div>
-            <div v-if="ordine.ecommerce.isImportExport" class="uk-grid-small uk-margin-left" uk-grid>
-                <div class="uk-width-expand" uk-leader>Import/Export</div>
-            </div>
-            <div v-if="ordine.ecommerce.isBookings" class="uk-grid-small uk-margin-left" uk-grid>
-                <div class="uk-width-expand" uk-leader>Prenotazioni</div>
-            </div>
-            <div v-if="ordine.ecommerce.isEvents" class="uk-grid-small uk-margin-left" uk-grid>
-                <div class="uk-width-expand" uk-leader>Eventi</div>
-            </div>
-            <div v-if="ordine.ecommerce.isAmazon" class="uk-grid-small uk-margin-left" uk-grid>
-                <div class="uk-width-expand" uk-leader>Amazon</div>
-            </div>
-            <div v-if="ordine.ecommerce.isEbay" class="uk-grid-small uk-margin-left" uk-grid>
-                <div class="uk-width-expand" uk-leader>Ebay</div>
-            </div>
-            <div v-if="ordine.ecommerce.marketplaces.qty>0" class="uk-grid-small" uk-grid>
-                <div>N° <strong>{{ordine.ecommerce.marketplaces.qty}}</strong></div>
-                <div class="uk-width-expand" uk-leader> Integrazione di marketplaces</div>
-                <div>€{{formatPrice(ordine.ecommerce.marketplaces.total)}}</div>
-            </div>
-            <div v-if="ordine.ecommerce.marketplaces.qty>0" class="uk-grid-small" uk-grid>
-                <div>N° <strong>{{ordine.ecommerce.products.qty}}</strong></div>
-                <div class="uk-width-expand" uk-leader> Prodotti</div>
-                <div>€{{formatPrice(ordine.ecommerce.products.total)}}</div>
-            </div>
-            <div class="uk-grid-small uk-margin-left uk-margin-bottom" uk-grid>
-                <div class="uk-width-expand" uk-leader><strong> Totale per E-commerce</strong></div>
-                <div>
-                    <strong><span>€{{formatPrice(ordine.ecommerce.total)}}</span></strong>
-                </div>
-            </div>
-            <div class="uk-padding-small"></div>
-        </div>
-        <div v-bind:class="{ 'uk-hidden': !ordine.progetto.isSEO}">
-            <h3>SEO</h3>
-            <div class="uk-grid-small" uk-grid>
-                <div>N° <strong>1</strong></div>
-                <div class="uk-width-expand" uk-leader> Ottimizzazione homepage</div>
-                <div>€{{formatPrice(ordine.seo.total)}}</div>
-            </div>
-            <div class="uk-grid-small" uk-grid>
-                <div>N° <strong>{{ordine.seo.keywords}}</strong></div>
-                <div class="uk-width-expand" uk-leader> Ottimizzazione chiavi di ricerca (Keywords)</div>
-                <div>€{{formatPrice(ordine.seo.totalpermonth)}}/mese</div>
-            </div>
-            <div class="uk-grid-small uk-margin-left uk-margin-bottom" uk-grid>
-                <div class="uk-width-expand" uk-leader><strong> Totale per SEO</strong></div>
-                <div>
-                    <strong><span>€{{formatPrice(ordine.seo.total)}} + €{{formatPrice(ordine.seo.totalpermonth)}}/mese</span></strong>
-                </div>
-            </div>
-            <div class="uk-padding-small"></div>
-        </div>
-        <div v-bind:class="{ 'uk-hidden': !ordine.progetto.isSocial}">
-            <h3>Social Media</h3>
-            <div v-if="ordine.socialmedia.qty>0" class="uk-grid-small" uk-grid>
-                <div>N° <strong>{{ordine.socialmedia.qty}}</strong></div>
-                <div class="uk-width-expand" uk-leader> Setup piattaforme social </div>
-                <div>€{{formatPrice(ordine.socialmedia.total)}}</div>
-            </div>
-            <div v-if="ordine.socialmedia.isGoogle" class="uk-grid-small uk-margin-left" uk-grid>
-                <div class="uk-width-expand" uk-leader><span uk-icon="icon: google"></span> 
-                Google</div>
-            </div>
-            <div v-if="ordine.socialmedia.isFacebook " class="uk-grid-small uk-margin-left" uk-grid>
-                <div class="uk-width-expand" uk-leader><span uk-icon="icon: facebook"></span> 
-                Facebook</div>
-            </div>
-            <div v-if="ordine.socialmedia.isLinkedin" class="uk-grid-small uk-margin-left" uk-grid>
-                <div class="uk-width-expand" uk-leader><span uk-icon="icon: linkedin"></span> 
-                LinkedIn</div>
-            </div>
-            <div v-if="ordine.socialmedia.isInstagram" class="uk-grid-small uk-margin-left" uk-grid>
-                <div class="uk-width-expand" uk-leader><span uk-icon="icon: instagram"></span> 
-                Instagram</div>
-            </div>
-            <div v-if="ordine.socialmedia.isPinterest" class="uk-grid-small uk-margin-left" uk-grid>
-                <div class="uk-width-expand" uk-leader><span uk-icon="icon: pinterest"></span> 
-                Pinterest</div>
-            </div>
-            <div class="uk-grid-small uk-margin-left uk-margin-bottom" uk-grid>
-                <div class="uk-width-expand" uk-leader><strong> Totale per Social Media</strong></div>
-                <div>
-                    <strong><span>€{{formatPrice(ordine.socialmedia.total)}}</span></strong>
-                </div>
-            </div>
-            <div class="uk-padding-small"></div>
-        </div>
-        <div v-bind:class="{ 'uk-hidden': !ordine.progetto.isGraphics}">
-            <h3>Logo</h3>
-            <div class="uk-grid-small" uk-grid>
-                <div>N° <strong>1</strong></div>
-                <div class="uk-width-expand" uk-leader> Design Logo (2 bozze + 1 revisione)</div>
-                <div>€{{formatPrice(ordine.graphics.total)}}</div>
-            </div>
-            <div class="uk-grid-small uk-margin-left uk-margin-bottom" uk-grid>
-                <div class="uk-width-expand" uk-leader><strong> Totale per design Logo</strong></div>
-                <div>
-                    <strong><span>€{{formatPrice(ordine.graphics.total)}}</span></strong>
-                </div>
-            </div>
-            <div class="uk-padding-small"></div>
-        </div>
-        <div v-bind:class="{ 'uk-hidden': !ordine.progetto.isMainteneance}">
-            <h3>Manutenzione</h3>
-            <div class="uk-grid-small" uk-grid>
-                <div>N° <strong>1</strong></div>
-                <div class="uk-width-expand" uk-leader> Manutenzione 
-                    <span v-if="ordine.mainteneance.isOrdinaria">(aggiornamenti software, bugfix, integrità dei contenuti, supporto telefonico)</span>
-                    <span v-if="ordine.mainteneance.isPerfettiva">(aggiornamenti software, bugfix, inserimento contenuti, supporto dedicato)</span>
-                </div>
-                <div>€{{formatPrice(ordine.mainteneance.totalperyear)}}/anno</div>
-            </div>
-            <div class="uk-grid-small uk-margin-left uk-margin-bottom" uk-grid>
-                <div class="uk-width-expand" uk-leader><strong> Totale per manutenzione</strong></div>
-                <div>
-                    <strong><span>€{{formatPrice(ordine.mainteneance.totalperyear)}}/anno</span></strong>
-                </div>
-            </div>
-            <div class="uk-padding-small"></div>
-        </div>
+            <div id="printarea" class="invoice-box">
+                <table cellpadding="0" cellspacing="0">
+                    <tr class="information">
+                        <td colspan="2">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <img src="https://www.zepfiro.com/wp-content/uploads/2018/08/zepfiro-logo-or-or-color.png" style="width:100px; max-width:100px;">
+                                        <h5>Higrow Srl</h5>
+                                        <p><small>via Monte Popera 4<br>
+                                        San Donà di Piave, 30027<br></small></p>
+                                    </td>
+                                    
+                                    <td>
+                                                                                        Preventivo #: {{ordineId}} <span v-if="date!=null"> del {{date.getUTCDate()}}/{{(date.getMonth()+1)}}/{{date.getFullYear()}}</span><br>
+                                        <h5 class="uk-text-right" v-if="ordine.anagrafica.azienda">{{ordine.anagrafica.azienda}}</h5>
+                                        <p class="uk-text-right">
+                                            <small>
 
-        <div>
-            <div class="uk-grid-small uk-margin-large-left uk-margin-bottom" uk-grid>
-                <div class="uk-width-expand" uk-leader><strong> Totale </strong></div>
-                <div>
-                    <strong>
-                        <span>€{{formatPrice(ordine.total)}}</span>
-                        <span v-if="ordine.totalperyear>0"> + €{{formatPrice(ordine.totalperyear)}}/anno</span>
-                        <span v-if="ordine.progetto.isSEO && ordine.seo.keywords>0"> + €{{formatPrice(ordine.seo.totalpermonth)}}/mese</span></strong>
-                </div>
-            </div>
-            <div class="uk-padding-small"></div>
-        </div>
-        </div>
-          <div class="invoice-box">
-        <table cellpadding="0" cellspacing="0">
-            <tr class="top">
-                <td colspan="2">
-                    <table>
-                        <tr>
-                            <td class="title">
-                                <img src="https://www.sparksuite.com/images/logo.png" style="width:100%; max-width:300px;">
-                            </td>
-                            
-                            <td>
-                                Invoice #: 123<br>
-                                Created: January 1, 2015<br>
-                                Due: February 1, 2015
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-            
-            <tr class="information">
-                <td colspan="2">
-                    <table>
-                        <tr>
-                            <td>
-                                Sparksuite, Inc.<br>
-                                12345 Sunny Road<br>
-                                Sunnyville, CA 12345
-                            </td>
-                            
-                            <td>
-                                Acme Corp.<br>
-                                John Doe<br>
-                                john@example.com
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-            
-            <tr class="heading">
-                <td>
-                    Payment Method
-                </td>
-                
-                <td>
-                    Check #
-                </td>
-            </tr>
-            
-            <tr class="details">
-                <td>
-                    Check
-                </td>
-                
-                <td>
-                    1000
-                </td>
-            </tr>
-            
-            <tr class="heading">
-                <td>
-                    Item
-                </td>
-                
-                <td>
-                    Price
-                </td>
-            </tr>
-            
-            <tr class="item">
-                <td>
-                    Website design
-                </td>
-                
-                <td>
-                    $300.00
-                </td>
-            </tr>
-            
-            <tr class="item">
-                <td>
-                    Hosting (3 months)
-                </td>
-                
-                <td>
-                    $75.00
-                </td>
-            </tr>
-            
-            <tr class="item last">
-                <td>
-                    Domain name (1 year)
-                </td>
-                
-                <td>
-                    $10.00
-                </td>
-            </tr>
-            
-            <tr class="total">
-                <td></td>
-                
-                <td>
-                   Total: $385.00
-                </td>
-            </tr>
-        </table>
-    </div>
+                                            <span v-if="ordine.anagrafica.referente">{{ordine.anagrafica.referente}}<br></span>
+                                            <span v-if="ordine.anagrafica.telefono">t: {{ordine.anagrafica.telefono}}</span>
+                                            <span v-if="ordine.anagrafica.telefono && ordine.anagrafica.email"><br></span>
+                                            <span v-if="ordine.anagrafica.email">e: {{ordine.anagrafica.email}}</span>
+                                            </small>
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                                <h3>{{ordine.progetto.titolo}}</h3>
+                                <p>{{ordine.progetto.descrizione}}</p>
+                        </td>
+                    </tr>
+                    <tr class="heading" v-bind:class="{ 'uk-hidden': !(ordine.progetto.isDomain || ordine.progetto.isHosting || ordine.progetto.isExchange)}">
+                        <td>Hosting, domini e mail</td>
+                        <td></td>
+                    </tr>
+                    <tr v-if="ordine.progetto.isDomain && ordine.webhosting.domain.totalperyear>0" class="item">
+                        <td>N° <strong>{{ordine.webhosting.domain.qty}}</strong> Registrazione/Trasferimento dominio ({{ordine.webhosting.domain.names}})</td>
+                        <td>€{{formatPrice(ordine.webhosting.domain.totalperyear)}}/anno</td>
+                    </tr>
+                    <tr v-if="ordine.progetto.isHosting && ordine.webhosting.hosting.host.totalperyear>0" class="item">
+                        <td>N° <strong>1</strong> Hosting web <span v-if="ordine.webhosting.domain.qty==1">Singolo Dominio</span><span v-else>Multidominio</span></td>
+                        <td>€{{formatPrice(ordine.webhosting.hosting.host.totalperyear)}}/anno</td>
+                    </tr>
+                    <tr v-if="ordine.webhosting.hosting.mailbox.isCaselle && ordine.webhosting.hosting.mailbox.qty>0" class="item">
+                        <td>N° <strong>{{ordine.webhosting.hosting.mailbox.qty}}</strong> Caselle di posta standard IMAP,POP3,SMTP </td>
+                        <td>€{{formatPrice(ordine.webhosting.hosting.mailbox.totalperyear)}}/anno</td>
+                    </tr>
+                    <tr v-if="ordine.progetto.isExchange && ordine.webhosting.exchange.total>0" class="item">
+                        <td>N° <strong>1</strong> Setup una tantum Microsoft Exchange </td>
+                        <td>€{{formatPrice(ordine.webhosting.exchange.total)}}</td>
+                    </tr>
+                    <tr v-if="ordine.progetto.isExchange && ordine.webhosting.exchange.mailuser.qty>0" class="item">
+                        <td>N° <strong>{{ordine.webhosting.exchange.mailuser.qty}}</strong> Account di posta Microsoft Exchange </td>
+                        <td>€{{formatPrice(ordine.webhosting.exchange.totalperyear)}}/anno</td>
+                    </tr>
+                    <tr v-if="ordine.progetto.isDomain || ordine.progetto.isHosting || ordine.progetto.isExchange" class="total">
+                        <td><strong> Totale per domini, hosting e email </strong></td>
+                        <td><strong>
+                            <span v-if="ordine.webhosting.total>0">€{{formatPrice(ordine.webhosting.total)}}</span>
+                            <span v-if="ordine.webhosting.total>0&&ordine.webhosting.totalperyear>0"><br> + </span>
+                            <span v-if="ordine.webhosting.totalperyear>0">€{{formatPrice(ordine.webhosting.totalperyear)}}/anno</span></strong>
+                        </td>
+                    </tr>
 
+
+
+
+
+                    <tr class="heading" v-bind:class="{ 'uk-hidden': !ordine.progetto.isWeb}">
+                        <td colspan="2">Web design</td>
+                    </tr>
+                    <tr class="item" v-bind:class="{ 'uk-hidden': !ordine.progetto.isWeb}">
+                        <td>N° <strong>1</strong> Design sito web (1 bozza + 2 revisioni)</td>
+                        <td>€{{formatPrice(ordine.webdesign.setup.total)}}</td>
+                    </tr>
+                    <tr class="item" v-bind:class="{ 'uk-hidden': !ordine.progetto.isWeb}">
+                        <td>N° <strong>{{parseInt(ordine.webdesign.pages.qty)+parseInt(ordine.webdesign.contents.qty)}}</strong> Pagine totali</td>
+                        <td>€{{formatPrice(ordine.webdesign.pages.total+ordine.webdesign.contents.total)}}</td>
+                    </tr>
+                    <tr v-if="ordine.webdesign.hasBlog||ordine.webdesign.hasPortfolio||ordine.webdesign.hasJob||ordine.webdesign.hasEvents||ordine.webdesign.hasNewsletter" class="item">
+                        <td>N° <strong>{{ordine.webdesign.modules.qty}}</strong> Moduli aggiuntivi ({{ordine.webdesign.modules.names}})</td>
+                        <td>€{{formatPrice(ordine.webdesign.modules.total)}}</td>
+                    </tr>
+                    <tr v-if="ordine.webdesign.translations.total>0" class="item">
+                        <td>N° <strong>{{ordine.webdesign.translations.qty}}</strong> Multilingua per {{ordine.progetto.languages.qty}} lingue (pagine principali + pagine secondarie + moduli)</td>
+                        <td>€{{formatPrice(ordine.webdesign.translations.total)}}</td>
+                    </tr>
+                    <tr class="total" v-bind:class="{ 'uk-hidden': !ordine.progetto.isWeb}">
+                        <td><strong> Totale per design sito web </strong></td>
+                        <td>
+                            <strong><span v-if="ordine.webdesign.total>0">€{{formatPrice(ordine.webdesign.total)}}</span></strong>
+                        </td>
+                    </tr>
+                    <tr class="heading" v-bind:class="{ 'uk-hidden': !ordine.progetto.isPrivacy}">
+                        <td colspan="2">Privacy</td>
+                    </tr>
+                    <tr class="item" v-bind:class="{ 'uk-hidden': !ordine.progetto.isPrivacy}">
+                        <td>N° <strong>1</strong> Setup Privacy e Cookie policy by Iubenda {{parseInt(ordine.progetto.languages.qty)+1}} lingue / {{ordine.webhosting.domain.qty}} domini</td>
+                        <td>€{{formatPrice(ordine.privacy.total)}}</td>
+                    </tr>
+                    <tr class="item" v-bind:class="{ 'uk-hidden': !ordine.progetto.isPrivacy}">
+                        <td>N° <strong>{{ordine.privacy.licenses.qty}}</strong> Licenze per {{parseInt(ordine.progetto.languages.qty)+1}} lingu<span v-if="parseInt(ordine.progetto.languages.qty)==0">a</span><span v-else>e</span><span v-if="ordine.webhosting.domain.qty>0"> / {{ordine.webhosting.domain.qty}} domini</span><span v-if="ordine.webhosting.domain.qty==1">o</span></td>
+                        <td>€{{formatPrice(ordine.privacy.totalperyear)}}/anno</td>
+                    </tr>
+                    <tr class="total" v-bind:class="{ 'uk-hidden': !ordine.progetto.isPrivacy}">
+                        <td><strong> Totale per privacy e cookie</strong></td>
+                        <td> 
+                            <strong><span>€{{formatPrice(ordine.privacy.total)}}<br> + €{{formatPrice(ordine.privacy.totalperyear)}}/anno</span></strong>
+                        </td>
+                    </tr>
+                    <tr class="heading" v-bind:class="{ 'uk-hidden': !ordine.progetto.isEcommerce}">
+                        <td colspan="2">Ecommerce</td>
+                    </tr>
+                    <tr v-bind:class="{ 'uk-hidden': !ordine.progetto.isEcommerce}" class="item">
+                        <td>N° <strong>1</strong> Setup piattaforma di E-commerce (Gestione Ordini, Carrello, Chekout, Spedizione, Cassa, Area ordini)</td>
+                        <td>€{{formatPrice(ordine.ecommerce.setup.total)}}</td>
+                    </tr>
+                    <tr v-if="ordine.ecommerce.modules.qty>0" class="item">
+                        <td>N° <strong>{{ordine.ecommerce.modules.qty}}</strong> Moduli aggiuntivi (
+                            <span v-if="ordine.ecommerce.isImportExport" class="item">
+                                Import/Export 
+                            </span>
+                            <span v-if="ordine.ecommerce.isBookings" class="item">
+                                Prenotazioni 
+                            </span>
+                            <span v-if="ordine.ecommerce.isEvents" class="item">
+                                Eventi 
+                            </span>
+                            <span v-if="ordine.ecommerce.isAmazon" class="item">
+                                Amazon 
+                            </span>
+                            <span v-if="ordine.ecommerce.isEbay" class="item">
+                                Ebay 
+                            </span>
+                        )
+                        </td>
+                        <td>€{{formatPrice(ordine.ecommerce.modules.total)}}</td>
+                    </tr>
+                    <tr v-if="ordine.ecommerce.marketplaces.qty>0" class="item">
+                        <td>N° <strong>{{ordine.ecommerce.marketplaces.qty}}</strong> Integrazione di marketplaces</td>
+                        <td>€{{formatPrice(ordine.ecommerce.marketplaces.total)}}</td>
+                    </tr>
+                    <tr v-if="ordine.ecommerce.products.qty>0" class="item">
+                        <td>N° <strong>{{ordine.ecommerce.products.qty}}</strong> Dataentry prodotti</td>
+                        <td>€{{formatPrice(ordine.ecommerce.products.total)}}</td>
+                    </tr>
+                    <tr v-bind:class="{ 'uk-hidden': !ordine.progetto.isEcommerce}" class="total">
+                        <td><strong> Totale per E-commerce</strong></td>
+                        <td>
+                            <strong><span>€{{formatPrice(ordine.ecommerce.total)}}</span></strong>
+                        </td>
+                    </tr>
+                    <tr class="heading" v-bind:class="{ 'uk-hidden': !ordine.progetto.isSEO}">
+                        <td colspan="2">SEO</td>
+                    </tr>
+                    <tr v-bind:class="{ 'uk-hidden': !ordine.progetto.isSEO}" class="item">
+                        <td>N° <strong>1</strong> Ottimizzazione homepage</td>
+                        <td>€{{formatPrice(ordine.seo.total)}}</td>
+                    </tr>
+                    <tr v-bind:class="{ 'uk-hidden': !parseInt(ordine.seo.keywords)>0}" class="item">
+                        <td>N° <strong>{{ordine.seo.keywords}}</strong> Ottimizzazione chiavi di ricerca (Keywords)</td>
+                        <td>€{{formatPrice(ordine.seo.totalpermonth)}}/mese</td>
+                    </tr>
+                    <tr v-bind:class="{ 'uk-hidden': !ordine.progetto.isSEO}" class="total">
+                        <td><strong> Totale per SEO</strong></td>
+                        <td>
+                            <strong><span>€{{formatPrice(ordine.seo.total)}}</span><span v-if="parseInt(ordine.seo.keywords)>0"> + €{{formatPrice(ordine.seo.totalpermonth)}}/mese</span></strong>
+                        </td>
+                    </tr>
+                    <tr class="heading" v-bind:class="{ 'uk-hidden': !ordine.progetto.isSocial}">
+                        <td colspan="2">Social Media</td>
+                    </tr>
+                    <tr v-if="ordine.socialmedia.qty>0" class="item">
+                        <td>N° <strong>{{ordine.socialmedia.qty}}</strong> Setup piattaforme social
+                                (<span uk-icon="icon: google; ratio:0.6" v-if="ordine.socialmedia.isGoogle">Google </span> 
+                                
+                                <span uk-icon="icon: facebook; ratio:0.6" v-if="ordine.socialmedia.isFacebook">Facebook </span> 
+                                
+                                <span uk-icon="icon: instagram; ratio:0.6" v-if="ordine.socialmedia.isInstagram">Instagram </span> 
+                                
+                                <span uk-icon="icon: youtube; ratio:0.6" v-if="ordine.socialmedia.isYoutube">Youtube </span> 
+                                
+                                <span uk-icon="icon: linkedin; ratio:0.6" v-if="ordine.socialmedia.isLinkedin">LinkedIn </span> 
+                                
+                                <span uk-icon="icon: pinterest; ratio:0.6" v-if="ordine.socialmedia.isPinterest">Pinterest </span>)
+                                
+                        </td>
+                        <td>€{{formatPrice(ordine.socialmedia.total)}}</td>
+                    </tr>
+                    <tr class="total" v-bind:class="{ 'uk-hidden': !ordine.progetto.isSocial}">
+                        <td><strong> Totale per Social Media</strong></td>
+                        <td>
+                            <strong><span>€{{formatPrice(ordine.socialmedia.total)}}</span></strong>
+                        </td>
+                    </tr>
+                    <tr class="heading" v-bind:class="{ 'uk-hidden': !ordine.progetto.isLogo}">
+                        <td colspan="2">Logo</td>
+                    </tr>
+                    <tr v-bind:class="{ 'uk-hidden': !ordine.progetto.isLogo}" class="item">
+                        <td>N° <strong>1</strong> Design Logo (2 bozze + 1 revisione)</td>
+                        <td>€{{formatPrice(ordine.graphics.logo.total)}}</td>
+                    </tr>
+                    <tr v-bind:class="{ 'uk-hidden': !ordine.progetto.isCoordinato}" class="item">
+                        <td>N° <strong>1</strong> Design Coordinato (Brand indentity)</td>
+                        <td>€{{formatPrice(ordine.graphics.coordinato.total)}}</td>
+                    </tr>
+                    <tr v-bind:class="{ 'uk-hidden': !ordine.progetto.isLogo && !ordine.progetto.isCoordinato}" class="total">
+                        <td><strong> Totale per Grafica</strong></td>
+                        <td>
+                            <strong><span>€{{formatPrice(ordine.graphics.total)}}</span></strong>
+                        </td>
+                    </tr>
+                    <tr class="heading" v-bind:class="{ 'uk-hidden': !ordine.progetto.isMainteneance}">
+                        <td colspan="2">Manutenzione</td>
+                    </tr>
+                    <tr class="item" v-bind:class="{ 'uk-hidden': !ordine.progetto.isMainteneance}">
+                        <td>N° <strong>1</strong> Manutenzione 
+                            <span v-if="ordine.mainteneance.isOrdinaria">(aggiornamenti software, bugfix, integrità dei contenuti, supporto telefonico)</span>
+                            <span v-if="ordine.mainteneance.isPerfettiva">(aggiornamenti software, bugfix, inserimento contenuti, supporto dedicato)</span>
+                        </td>
+                        <td>€{{formatPrice(ordine.mainteneance.totalperyear)}}/anno</td>
+                    </tr>
+                    <tr class="total" v-bind:class="{ 'uk-hidden': !ordine.progetto.isMainteneance}">
+                        <td><strong> Totale per manutenzione</strong></td>
+                        <td>
+                            <strong><span>€{{formatPrice(ordine.mainteneance.totalperyear)}}/anno</span></strong>
+                        </td>
+                    </tr>
+                    <!--totale-->
+                    <tr class="item">
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                    </tr>
+                    <tr class="total">
+                        <td><strong> Totale </strong></td>
+                        <td>
+                            <strong>
+                                <span>€{{formatPrice(ordine.total+ordine.totalperyear)}}</span></strong>
+                                <span v-if="ordine.totalperyear>0"><br> di cui €{{formatPrice(ordine.totalperyear)}}/anno</span>
+                                <span v-if="ordine.progetto.isSEO && ordine.seo.keywords>0"> + €{{formatPrice(ordine.seo.totalpermonth)}}/mese</span>
+                        </td>
+                    </tr>
+                    <tr class="total">
+                        <td colspan="2">
+                                Anticipo 50%, saldo alla consegna
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <h4>oppure scegli <strong>Formula "0"</strong></h4>
+                            <p>Tutto quanto pagando mese per mese senza costi iniziali e d'ora in avanti il tuo sito è sempre aggiornato (impegno minimo 12 mesi)</p>
+                            <p>
+                            
+                                <span>Anticipo <strong>€{{formatPrice(0)}}</strong> e paghi solo </span>
+                                <strong><span style="font-size:20px;"> €{{formatPrice(ordine.formulaZero)}}/mese</span></strong></p>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
     </div>
 </template>
 <script>
 import axios from "axios/dist/axios";
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
+
 
 export default {
   name: "Riepilogo",
   components: {
-    axios,
-    html2canvas,
-    jsPDF
+    axios
   },
   data: function(){
       return{
-
+        date:Date.now(),
         ordine: {
             anagrafica: {
-            azienda: "",
-            referente: "",
-            telefono: "",
-            email: ""
+                azienda: "",
+                referente: "",
+                telefono: "",
+                email: ""
             },
             progetto: {
-            titolo: "",
-            descrizione: "",
-            isMultilanguage: false,
-            languages: { qty: 0 },
-            isDomain: false,
-            isHosting: false,
-            isExchange: false,
-            isWeb: false,
-            isPrivacy: false,
-            isEcommerce: false,
-            isSEO: false,
-            isSocial: false,
-            isGraphics: false,
-            isMainteneance: false
+                titolo: "",
+                descrizione: "",
+                isMultilanguage: false,
+                languages: { qty: 0 },
+                isDomain: false,
+                isHosting: false,
+                isExchange: false,
+                isWeb: false,
+                isPrivacy: false,
+                isEcommerce: false,
+                isSEO: false,
+                isSocial: false,
+                isLogo: false,
+                isCoordinato:false,
+                isMainteneance: false
             },
             webhosting: {
-            domain: {
-                names: ""
-            },
-            hosting: {
-                host: {},
-                mailbox: { isCaselle: false, qty: 0 }
-            },
-            exchange: {
-                setup: {},
-                mailuser: { qty: 0 }
-            }
+                domain: {
+                    names: ""
+                },
+                hosting: {
+                    host: {},
+                    mailbox: { isCaselle: false, qty: 0 }
+                },
+                exchange: {
+                    setup: {},
+                    mailuser: { qty: 0 }
+                }
             },
             webdesign: {
-            setup: {},
-            modules: { names: "" },
-            translations: {},
-            hasBlog: false,
-            hasPortfolio: false,
-            hasJob: false,
-            hasEvents: false,
-            hasNewsletter: false,
-            pages: { qty: 4 },
-            contents: { qty: 0 }
+                setup: {},
+                modules: { names: "" },
+                translations: {},
+                hasBlog: false,
+                hasPortfolio: false,
+                hasJob: false,
+                hasEvents: false,
+                hasNewsletter: false,
+                pages: { qty: 4 },
+                contents: { qty: 0 }
             },
             ecommerce: {
-            isImportExport: false,
-            isBookings: false,
-            isEvents: false,
-            isAmazon: false,
-            isEbay: false,
-            isDataEntry: false,
-            modules: { qty: 0 },
-            marketplaces: { qty: 0 },
-            products: { qty: 0 },
-            setup: {}
-            },
-            privacy: {
-            licenses: {
+                isImportExport: false,
+                isBookings: false,
+                isEvents: false,
+                isAmazon: false,
+                isEbay: false,
+                isDataEntry: false,
+                modules: { qty: 0 },
+                marketplaces: { qty: 0 },
+                products: { qty: 0 },
                 setup: {}
-            }
+                },
+                privacy: {
+                licenses: {
+                    setup: {}
+                }
             },
             seo: {
-            keywords: 0
+                keywords: 0
             },
             socialmedia: {
-            isGoogle: false,
-            isFacebook: false,
-            isLinkedin: false,
-            isInstagram: false,
-            isPinterest: false
+                isGoogle: false,
+                isFacebook: false,
+                isLinkedin: false,
+                isInstagram: false,
+                isPinterest: false
             },
             graphics: {},
             mainteneance: {
-            isOrdinaria: false,
-            isPerfettiva: false
+                isOrdinaria: false,
+                isPerfettiva: false
             }
         }
       };
@@ -464,6 +375,8 @@ export default {
     if (this.$route.params.id) {
       this.ordineId = this.$route.params.id;
       await this.getOrdine(this.$route.params.id);
+    }else{
+        this.$parent.title = 'Riepilogo ordine';
     }
   },
   methods: {
@@ -478,7 +391,9 @@ export default {
       axios
         .get("https://api.ordini.zepfiro.com/ordini/" + id)
         .then(function(response) {
-          vm.ordine = response.data.ordine
+            vm.ordine = response.data.ordine
+            vm.date = new Date(vm.ordine.createdAt);
+            vm.$parent.title = vm.ordine.fileid;
         })
         .catch(function(error) {});
     },
@@ -489,14 +404,15 @@ export default {
 }
 </script>
 <style>
+h1,h2,h3,h4,h5,h6,p{
+    margin-top:0px;
+    margin-bottom:10px;
+}
     .invoice-box {
         max-width: 800px;
         margin: auto;
-        padding: 30px;
-        border: 1px solid #eee;
-        box-shadow: 0 0 10px rgba(0, 0, 0, .15);
-        font-size: 16px;
-        line-height: 24px;
+        font-size: 11px;
+        line-height: 14px;
         font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
         color: #555;
     }
@@ -508,26 +424,27 @@ export default {
     }
     
     .invoice-box table td {
-        padding: 5px;
+        padding: 3px;
         vertical-align: top;
     }
     
     .invoice-box table tr td:nth-child(2) {
         text-align: right;
+        max-width: 100px;
     }
     
     .invoice-box table tr.top table td {
-        padding-bottom: 20px;
+        padding-bottom: 10px;
     }
     
     .invoice-box table tr.top table td.title {
-        font-size: 45px;
-        line-height: 45px;
+        font-size: 36px;
+        line-height: 36px;
         color: #333;
     }
     
     .invoice-box table tr.information table td {
-        padding-bottom: 40px;
+        padding-bottom: 10px;
     }
     
     .invoice-box table tr.heading td {
@@ -537,7 +454,7 @@ export default {
     }
     
     .invoice-box table tr.details td {
-        padding-bottom: 20px;
+        padding-bottom: 10px;
     }
     
     .invoice-box table tr.item td{
@@ -550,7 +467,10 @@ export default {
     
     .invoice-box table tr.total td:nth-child(2) {
         border-top: 2px solid #eee;
-        font-weight: bold;
+    }
+    
+    .invoice-box table tr.total td:nth-child(1) {
+        text-align: right;
     }
     
     @media only screen and (max-width: 600px) {

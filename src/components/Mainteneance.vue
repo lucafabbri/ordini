@@ -30,11 +30,15 @@ export default {
     },
     toggleIsOrdinaria: function(){
         this.mainteneance.isOrdinaria=!this.mainteneance.isOrdinaria;
-        this.mainteneance.isPerfettiva=!this.mainteneance.isOrdinaria;
+        if(this.mainteneance.isOrdinaria){
+            this.mainteneance.isPerfettiva=!this.mainteneance.isOrdinaria;
+        }
     },
     toggleIsPerfettiva: function(){
         this.mainteneance.isPerfettiva=!this.mainteneance.isPerfettiva;
-        this.mainteneance.isOrdinaria=!this.mainteneance.isPerfettiva;
+        if(this.mainteneance.isPerfettiva){
+            this.mainteneance.isOrdinaria=!this.mainteneance.isPerfettiva;
+        }
     }
   }
 };
