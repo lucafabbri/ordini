@@ -250,8 +250,8 @@
                         <td><strong> Totale </strong></td>
                         <td>
                             <strong>
-                                <span>€{{formatPrice(ordine.total+ordine.totalperyear)}}</span></strong>
-                                <span v-if="ordine.totalperyear>0"><br> di cui €{{formatPrice(ordine.totalperyear)}}/anno</span>
+                                <span>€{{formatPrice(ordine.total)}}</span></strong>
+                                <span v-if="ordine.totalperyear>0"><br> + €{{formatPrice(ordine.totalperyear)}}/anno</span>
                                 <span v-if="ordine.progetto.isSEO && ordine.seo.keywords>0"> + €{{formatPrice(ordine.seo.totalpermonth)}}/mese</span>
                         </td>
                     </tr>
