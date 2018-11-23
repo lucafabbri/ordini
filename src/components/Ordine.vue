@@ -112,7 +112,7 @@ export default {
   },
   data: function() {
     return {
-      date:Date.now(),
+      date:new Date(),
       pricelist: {
         domain: { price: 9.9, recurrent: true, frequency: "year" },
         hosting: {
