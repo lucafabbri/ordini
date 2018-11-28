@@ -8,10 +8,17 @@
             </div>
         </div>
         <div v-if="progetto.isHosting" class="uk-width-1-1">
+            <div v-if="!progetto.isDomain || webhosting.domain.qty<=1">
+            <button type="button" v-bind:class="[ webhosting.hosting.isMultidomain ? 'uk-button-primary': 'uk-button-default' ]" v-on:click="toggleIsMultidomain()" class="uk-button uk-margin-top uk-margin-right">
+                <span v-if="!webhosting.hosting.mailbox.isCaselle" uk-icon="icon: plus-circle"></span> 
+                <span v-if="webhosting.hosting.mailbox.isCaselle" uk-icon="icon: minus-circle"></span> 
+                Hosting multidominio
+            </button>
+            </div>
             <button type="button" v-bind:class="[ webhosting.hosting.mailbox.isCaselle ? 'uk-button-primary': 'uk-button-default' ]" v-on:click="toggleIsCaselle()" class="uk-button uk-margin-top uk-margin-right" :disabled="progetto.isExchange">
                 <span v-if="!webhosting.hosting.mailbox.isCaselle" uk-icon="icon: plus-circle"></span> 
                 <span v-if="webhosting.hosting.mailbox.isCaselle" uk-icon="icon: minus-circle"></span> 
-                Caselle di posta aggiuntive <small>da 9,90€/anno a casella</small>
+                Caselle di posta aggiuntive 
             </button>
             <div v-if="webhosting.hosting.mailbox.isCaselle" class="uk-margin-small-top">
                 <label class="uk-form-label">Specifica il numero di caselle di posta 
@@ -46,6 +53,9 @@ export default {
         toggleIsCaselle: function(){
             this.webhosting.hosting.mailbox.isCaselle = !this.webhosting.hosting.mailbox.isCaselle;
         },
+        toggleIsMultidomain: function(){
+            this.webhosting.hosting.isMultidomain = !this.webhosting.hosting.isMultidomain;
+        }
     }
 }
 </script>

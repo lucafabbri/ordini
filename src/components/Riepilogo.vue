@@ -260,7 +260,7 @@
                                 Anticipo 50%, saldo alla consegna
                         </td>
                     </tr>
-                    <tr>
+                    <tr v-if="ordine.formulaZero>0">
                         <td colspan="2">
                             <h4>oppure scegli <strong>Formula "0"</strong></h4>
                             <p>Tutto quanto pagando mese per mese senza costi iniziali e d'ora in avanti il tuo sito è sempre aggiornato (impegno minimo 12 mesi)</p>

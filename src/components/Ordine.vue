@@ -1,76 +1,118 @@
 <template>
-<div>
-  <div class="uk-background-secondary uk-padding" uk-sticky>
-            <img src="https://www.zepfiro.com/wp-content/uploads/2018/08/zepfiro-logo-or-or-white.png" style="width:150px; max-width:150px;">
-       <button v-if="total||totalperyear" type="button" class="uk-button uk-button-primary" v-on:click="saveOrder()"><span uk-icon="icon: push"></span>  Salva preventivo</button>
-    <router-link :to="{ name: 'ElencoOrdini'}" class="uk-button uk-button-default"><span uk-icon="icon: list"></span>  Elenco</router-link>
-       <router-link :to="{ name: 'RiepilogoOrdine', params: { id: ordineId }}" v-if="ordineId!=0"  class="uk-button uk-button-default"><span uk-icon="icon: file-text"></span>  Riepilogo</router-link>
-       <span v-if="ordine.fileid">{{ordine.fileid}}</span>
-  </div>
-  <form class="uk-form-stacked uk-padding">
-    <div>
-      <div class="uk-margin-medium-top uk-margin-medium-right">
-        <h2 class="uk-heading-divider">Anagrafica cliente<em>*</em></h2>
-        <Anagrafica class="uk-accordion-content" :input="ordine.anagrafica" />
+  <div>
+    <div class="uk-background-secondary uk-padding" uk-sticky>
+      <img
+        src="https://www.zepfiro.com/wp-content/uploads/2018/08/zepfiro-logo-or-or-white.png"
+        style="width:150px; max-width:150px;"
+      >
+      <button
+        v-if="total||totalperyear"
+        type="button"
+        class="uk-button uk-button-primary"
+        v-on:click="saveOrder()"
+      >
+        <span uk-icon="icon: push"></span> Salva preventivo
+      </button>
+      <router-link :to="{ name: 'ElencoOrdini'}" class="uk-button uk-button-default">
+        <span uk-icon="icon: list"></span> Elenco
+      </router-link>
+      <router-link
+        :to="{ name: 'RiepilogoOrdine', params: { id: ordineId }}"
+        v-if="ordineId!=0"
+        class="uk-button uk-button-default"
+      >
+        <span uk-icon="icon: file-text"></span> Riepilogo
+      </router-link>
+      <span v-if="ordine.fileid">{{ordine.fileid}}</span>
+    </div>
+    <form class="uk-form-stacked uk-padding">
+      <div>
+        <div class="uk-margin-medium-top uk-margin-medium-right">
+          <h2 class="uk-heading-divider">Anagrafica cliente
+            <em>*</em>
+          </h2>
+          <Anagrafica class="uk-accordion-content" :input="ordine.anagrafica"/>
+        </div>
       </div>
-    </div>
-    <div>
-      <div class="uk-margin-medium-top uk-margin-medium-right">
-        <h2 class="uk-heading-divider">Informazioni sul progetto<em>*</em></h2>
-        <Progetto class="uk-accordion-content" :input="ordine.progetto" />
+      <div>
+        <div class="uk-margin-medium-top uk-margin-medium-right">
+          <h2 class="uk-heading-divider">Informazioni sul progetto
+            <em>*</em>
+          </h2>
+          <Progetto class="uk-accordion-content" :input="ordine.progetto"/>
+        </div>
       </div>
-    </div>
-    <div v-if="ordine.progetto.isDomain || ordine.progetto.isHosting || ordine.progetto.isExchange">
-      <div class="uk-margin-medium-top uk-margin-medium-right">
-        <h2 class="uk-heading-divider">Hosting e Domini</h2>
-        <WebHosting class="uk-accordion-content" :input="ordine.webhosting" :progetto="ordine.progetto" />
+      <div
+        v-if="ordine.progetto.isDomain || ordine.progetto.isHosting || ordine.progetto.isExchange"
+      >
+        <div class="uk-margin-medium-top uk-margin-medium-right">
+          <h2 class="uk-heading-divider">Hosting e Domini</h2>
+          <WebHosting
+            class="uk-accordion-content"
+            :input="ordine.webhosting"
+            :progetto="ordine.progetto"
+          />
+        </div>
       </div>
-    </div>
-    <div v-if="ordine.progetto.isWeb">
-      <div class="uk-margin-medium-top uk-margin-medium-right">
-        <h2 class="uk-heading-divider">Sito web </h2>
-        <WebDesign class="uk-accordion-content" :input="ordine.webdesign" :progetto="ordine.progetto" />
+      <div v-if="ordine.progetto.isWeb">
+        <div class="uk-margin-medium-top uk-margin-medium-right">
+          <h2 class="uk-heading-divider">Sito web</h2>
+          <WebDesign
+            class="uk-accordion-content"
+            :input="ordine.webdesign"
+            :progetto="ordine.progetto"
+          />
+        </div>
       </div>
-    </div>
-    <div v-if="ordine.progetto.isEcommerce">
-      <div class="uk-margin-medium-top uk-margin-medium-right">
-        <h2 class="uk-heading-divider">E-commerce</h2>
-        <Ecommerce class="uk-accordion-content" :ordine="ordine" />
+      <div v-if="ordine.progetto.isEcommerce">
+        <div class="uk-margin-medium-top uk-margin-medium-right">
+          <h2 class="uk-heading-divider">E-commerce</h2>
+          <Ecommerce class="uk-accordion-content" :ordine="ordine"/>
+        </div>
       </div>
-    </div>
-    <div v-if="ordine.progetto.isSEO">
-      <div class="uk-margin-medium-top uk-margin-medium-right">
-        <h2 class="uk-heading-divider">SEO</h2>
-        <Seo class="uk-accordion-content" :input="ordine.seo" :progetto="ordine.progetto" />
+      <div v-if="ordine.progetto.isSEO">
+        <div class="uk-margin-medium-top uk-margin-medium-right">
+          <h2 class="uk-heading-divider">SEO</h2>
+          <Seo class="uk-accordion-content" :input="ordine.seo" :progetto="ordine.progetto"/>
+        </div>
       </div>
-    </div>
-    <div v-if="ordine.progetto.isSocial">
-      <div class="uk-margin-medium-top uk-margin-medium-right">
-        <h2 class="uk-heading-divider">Social Media</h2>
-        <SocialMedia class="uk-accordion-content" :input="ordine.socialmedia" :progetto="ordine.progetto" />
+      <div v-if="ordine.progetto.isSocial">
+        <div class="uk-margin-medium-top uk-margin-medium-right">
+          <h2 class="uk-heading-divider">Social Media</h2>
+          <SocialMedia
+            class="uk-accordion-content"
+            :input="ordine.socialmedia"
+            :progetto="ordine.progetto"
+          />
+        </div>
       </div>
-    </div>
-    <div v-if="ordine.progetto.isMainteneance"> 
-      <div class="uk-margin-medium-top uk-margin-medium-right">
-        <h2 class="uk-heading-divider">Manutenzione </h2>
-        <Mainteneance class="uk-accordion-content" :input="ordine.mainteneance" :progetto="ordine.progetto" />
+      <div v-if="ordine.progetto.isMainteneance">
+        <div class="uk-margin-medium-top uk-margin-medium-right">
+          <h2 class="uk-heading-divider">Manutenzione</h2>
+          <Mainteneance
+            class="uk-accordion-content"
+            :input="ordine.mainteneance"
+            :progetto="ordine.progetto"
+          />
+        </div>
       </div>
-    </div>
-    <div class="uk-flex uk-flex-left uk-margin-medium-top">
-      <p class="uk-text-lead">
-        <strong v-if="total||totalperyear">Totale: </strong>
-        <span v-if="total">{{formatPrice(total+totalperyear)}}€</span>
-        <span v-if="totalperyear"> (di cui {{formatPrice(totalperyear)}}€/anno)</span>
-        <span v-if="(total||totalperyear)&&seo_totalpermonth"> + </span>
-        <span v-if="seo_totalpermonth">Seo: {{formatPrice(seo_totalpermonth)}}€/mese</span>
-        <br>
-        <strong v-if="formulaZero>0">Offerta formula zero: </strong>
-        <span v-if="formulaZero>0">{{formatPrice(formulaZero)}}€/mese</span>
-        <span v-if="(formulaZero>0)&&seo_totalpermonth"> + </span>
-        <span v-if="(formulaZero>0)&&seo_totalpermonth">Seo: {{formatPrice(seo_totalpermonth)}}€/mese</span>
-      </p>
-    </div>
-  </form>
+      <div class="uk-flex uk-flex-left uk-margin-medium-top">
+        <p class="uk-text-lead">
+          <strong v-if="total||totalperyear">Totale:</strong>
+          <span v-if="total">{{formatPrice(total+totalperyear)}}€</span>
+          <span v-if="totalperyear">(di cui {{formatPrice(totalperyear)}}€/anno)</span>
+          <span v-if="(total||totalperyear)&&seo_totalpermonth">+</span>
+          <span v-if="seo_totalpermonth">Seo: {{formatPrice(seo_totalpermonth)}}€/mese</span>
+          <br>
+          <strong v-if="formulaZero>0">Offerta formula zero:</strong>
+          <span v-if="formulaZero>0">{{formatPrice(formulaZero)}}€/mese</span>
+          <span v-if="(formulaZero>0)&&seo_totalpermonth">+</span>
+          <span
+            v-if="(formulaZero>0)&&seo_totalpermonth"
+          >Seo: {{formatPrice(seo_totalpermonth)}}€/mese</span>
+        </p>
+      </div>
+    </form>
   </div>
 </template>
 
@@ -112,12 +154,12 @@ export default {
   },
   data: function() {
     return {
-      date:new Date(),
+      date: new Date(),
       pricelist: {
         domain: { price: 9.9, recurrent: true, frequency: "year" },
         hosting: {
-          host: { price: 29.9, recurrent: true, frequency: "year" },
-          multihost: { price: 49.9, recurrent: true, frequency: "year" },
+          host: { price: 39.9, recurrent: true, frequency: "year" },
+          multihost: { price: 79.9, recurrent: true, frequency: "year" },
           mailbox: { price: 9.9, recurrent: true, frequency: "year" }
         },
         exchange: {
@@ -211,6 +253,7 @@ export default {
           },
           hosting: {
             host: {},
+            isMultidomain: false,
             mailbox: { isCaselle: false, qty: 0 }
           },
           exchange: {
@@ -293,7 +336,7 @@ export default {
     webhosting_hosting_host_totalperyear: function() {
       return (this.ordine.webhosting.hosting.host.totalperyear = this.ordine
         .progetto.isHosting
-        ? this.webhosting_domain_qty > 1
+        ? this.webhosting_domain_qty > 1 || this.ordine.webhosting.hosting.isMultidomain
           ? this.pricelist.hosting.multihost.price
           : this.pricelist.hosting.host.price
         : 0);
@@ -740,7 +783,7 @@ export default {
       var version = "01";
       if (this.isEdit && this.ordine.fileid != null) {
         var fid = this.ordine.fileid.split("-");
-        version = this.formatZeroNumber(parseInt(fid[fid.length - 1])+1);
+        version = this.formatZeroNumber(parseInt(fid[fid.length - 1]) + 1);
         console.log(fid[fid.length - 1]);
         console.log(version);
       }
