@@ -7,7 +7,7 @@
         </div>
         <div class="uk-width-1-1">
             <label class="uk-form-label">Breve descrizione</label>
-            <textarea class="uk-textarea" rows="4" maxlength="600" v-model="progetto.descrizione"></textarea>
+            <textarea class="uk-textarea" rows="4" maxlength="2800" v-model="progetto.descrizione"></textarea>
         </div>
         <div class="uk-width-1-1">
             <div>

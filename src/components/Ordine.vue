@@ -61,6 +61,7 @@
             class="uk-accordion-content"
             :input="ordine.webdesign"
             :progetto="ordine.progetto"
+            :pricelist="pricelist.webdesign"
           />
         </div>
       </div>
@@ -132,6 +133,12 @@ import router from "../router";
 
 export default {
   name: "Ordine",
+    props: ['auth','authenticated'],
+    beforeMount:function(){
+      if(!this.authenticated){
+        router.push('/');
+      }
+    },
   components: {
     axios,
     router,
@@ -167,7 +174,7 @@ export default {
           mailuser: { price: 40.8, recurrent: true, frequency: "year" }
         },
         webdesign: {
-          setup: { price: 599, recurrent: false, frequency: "" },
+          setup: { price: 799, recurrent: false, frequency: "" },
           language: { price: 199, recurrent: false, frequency: "" },
           module: { price: 199, recurrent: false, frequency: "" },
           page: { price: 99, recurrent: false, frequency: "" },
@@ -179,7 +186,7 @@ export default {
           iubenda: { price: 19, recurrent: true, frequency: "year" }
         },
         ecommerce: {
-          setup: { price: 799, recurrent: false, frequency: "" },
+          setup: { price: 1199, recurrent: false, frequency: "" },
           module: { price: 299, recurrent: false, frequency: "" },
           marketplace: { price: 499, recurrent: false, frequency: "" },
           perproduct: { price: 9.9, recurrent: false, frequency: "" },
@@ -729,8 +736,8 @@ export default {
       }
       var coefficente =
         this.total + this.totalperyear < 10000
-          ? 1.2 + 0.8 * ((this.totalperyear + this.total) / 10000)
-          : 2;
+          ? 1 + 0.75 * ((this.totalperyear + this.total) / 10000)
+          : 1.75;
       var permonth = (this.totalperyear + this.total / coefficente) / 12;
       result = Math.ceil(permonth / 10) * 10 - 1;
 

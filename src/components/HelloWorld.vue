@@ -1,15 +1,19 @@
 <template>
-  <div class="hello">
-    <h1>{{ msg }}</h1>
+  <div class="uk-text-center">
+    <h1>Zepfiro modulo ordini</h1>
   </div>
 </template>
 
 <script>
+import router from "../router";
 export default {
   name: 'HelloWorld',
-  props: {
-    msg: String
-  }
+    props: ['auth','authenticated'],
+    beforeMount:function(){
+      if(this.authenticated){
+        router.push('/ordini');
+      }
+    },
 }
 </script>
 

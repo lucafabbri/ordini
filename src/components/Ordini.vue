@@ -1,12 +1,12 @@
 <template>
     <div>
         <div class="uk-background-secondary uk-padding" uk-sticky>
-            <img src="https://www.zepfiro.com/wp-content/uploads/2018/08/zepfiro-logo-or-or-white.png" style="width:150px; max-width:150px;">
+            <img src="https://www.higrow.it/images/higrow-logo-1024-light.png" style="width:150px; max-width:150px;">
             <router-link :to="{ name: 'Ordine', params:{id:'nuovo'}}" class="uk-button uk-button-default"><span uk-icon="icon: plus"></span>  Nuovo ordine/preventivo</router-link>
         </div>
         <div class="uk-padding">
         <ul class="uk-list uk-list-divider">
-            <li v-for="ordine in ordini">
+            <li v-bind:key="id" v-for="ordine in orderedOrdini">
                 <div uk-grid>
                     <div class="uk-width-auto">
                         <h4>#{{ordine.id}} </h4>
@@ -31,8 +31,15 @@
 </template>
 <script>
 import axios from "axios/dist/axios";
+import lodash from "lodash";
 export default {
   name: "Ordini",
+    props: ['auth','authenticated'],
+    beforeMount:function(){
+      if(!this.authenticated){
+        router.push('/');
+      }
+    },
   components: {
     axios,
   },
@@ -44,9 +51,14 @@ export default {
         }]
       };
   },
-  created: async function() {
+  mounted: async function() {
       await this.getOrdini();
       this.$parent.title = 'Elenco ordini';
+  },
+  computed: {
+    orderedOrdini: function () {
+        return lodash.orderBy(this.ordini, 'id','desc')
+    }
   },
   methods: {
     formatPrice: function(value) {
@@ -54,22 +66,19 @@ export default {
       return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     },
     getOrdini: function() {
-      const vm = this;
       axios
         .get("https://api.ordini.zepfiro.com/ordini")
         .then(function(response) {
-            console.log(response.data);
-            vm.ordini = response.data
-        })
+            this.ordini = response.data;
+        }.bind(this))
         .catch(function(error) {});
     },
     eliminaOrdine: function(ordine){
-      const vm = this;
         axios
         .delete("https://api.ordini.zepfiro.com/ordini/"+ordine.id)
         .then(function(response){
-            vm.getOrdini();
-        })
+            this.getOrdini();
+        }.bind(this))
         .catch(function(error) {});
     }
   }

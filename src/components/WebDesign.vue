@@ -46,11 +46,13 @@ export default {
     name:"WebDesign",
     props:{
         input:Object,
-        progetto:Object
+        progetto:Object,
+        pricelist:Object
     },
     data:function(){
         return {
-            webdesign: this.input
+            webdesign: this.input,
+            listino: this.pricelist
         }
     },
     methods:{

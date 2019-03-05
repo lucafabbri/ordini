@@ -2,10 +2,14 @@
     <div>
         
         <div class="uk-background-secondary uk-padding noprint">
-            <img src="https://www.zepfiro.com/wp-content/uploads/2018/08/zepfiro-logo-or-or-white.png" style="width:150px; max-width:150px;">
-            <router-link :to="{ name: 'ElencoOrdini'}" class="uk-button uk-button-default"><span uk-icon="icon: list"></span>  Elenco</router-link>
-            <router-link :to="{ name: 'Ordine', params: { id: $route.params.id }}" class="uk-button uk-button-default"><span uk-icon="icon: file-edit"></span>  Modifica</router-link>
-            <button type="button" class="uk-button uk-button-default" v-on:click="print()"><span uk-icon="icon: file-pdf"></span>  Stampa PDF</button>
+            <img src="https://www.higrow.it/images/higrow-logo-1024-light.png" style="width:150px; max-width:150px;">
+            <router-link :to="{ name: 'ElencoOrdini'}" class="uk-button uk-button-default"><span uk-icon="icon: list"></span>  Elenco</router-link> 
+            <router-link :to="{ name: 'Ordine', params: { id: $route.params.id }}" class="uk-button uk-button-default"><span uk-icon="icon: file-edit"></span>  Modifica</router-link> 
+            <button type="button" class="uk-button uk-button-default" v-on:click="print()"><span uk-icon="icon: file-pdf"></span>  Stampa PDF</button> 
+                <button type="button" v-bind:class="[ formulaZeroIsActive ? 'uk-button-primary': 'uk-button-default' ]" v-on:click="toggleIsFormulaZero()" class="uk-button">
+                <span v-if="!formulaZeroIsActive" uk-icon="icon: plus-circle"></span> 
+                <span v-if="formulaZeroIsActive" uk-icon="icon: minus-circle"></span> 
+                Formula Zero</button>
         </div>
         <div class="uk-padding">
             <div id="printarea" class="invoice-box">
@@ -15,7 +19,7 @@
                             <table>
                                 <tr>
                                     <td>
-                                        <img src="https://www.zepfiro.com/wp-content/uploads/2018/08/zepfiro-logo-or-or-color.png" style="width:100px; max-width:100px;">
+                                        <img src="https://www.higrow.it/images/higrow-logo-1024.png" style="width:100px; max-width:100px;">
                                         <h5>Higrow Srl</h5>
                                         <p><small>via Monte Popera 4<br>
                                         San Donà di Piave, 30027<br></small></p>
@@ -42,6 +46,27 @@
                         <td colspan="2">
                                 <h3>{{ordine.progetto.titolo}}</h3>
                                 <p>{{ordine.progetto.descrizione}}</p>
+                        </td>
+                    </tr>
+                    <tr class="heading" v-bind:class="{ 'uk-hidden': !ordine.progetto.isWeb}">
+                        <td colspan="2">Web design</td>
+                    </tr>
+                    <tr class="item" v-bind:class="{ 'uk-hidden': !ordine.progetto.isWeb}">
+                        <td colspan="2">Design sito web (1 bozza + 2 revisioni) fino a {{parseInt(ordine.webdesign.pages.qty)+parseInt(ordine.webdesign.contents.qty)}} pagine in {{parseInt(ordine.progetto.languages.qty)+1}} lingu{{(parseInt(ordine.progetto.languages.qty)+1==1)?'a':'e'}}
+                        <span v-if="ordine.webdesign.hasBlog||ordine.webdesign.hasPortfolio||ordine.webdesign.hasJob||ordine.webdesign.hasEvents||ordine.webdesign.hasNewsletter">
+                            con 
+                                <span v-if="ordine.webdesign.hasBlog">Blog </span>
+                                <span v-if="ordine.webdesign.hasPortfolio">Portfolio </span>
+                                <span v-if="ordine.webdesign.hasJob">Job </span>
+                                <span v-if="ordine.webdesign.hasEvents">Eventi </span>
+                                <span v-if="ordine.webdesign.hasNewsletter">Newsletter </span>
+                        </span>.
+                        </td>
+                    </tr>
+                    <tr class="total" v-bind:class="{ 'uk-hidden': !ordine.progetto.isWeb}">
+                        <td><strong> Totale per design sito web </strong></td>
+                        <td>
+                            <strong><span v-if="ordine.webdesign.total>0">€{{formatPrice(ordine.webdesign.total)}}</span></strong>
                         </td>
                     </tr>
                     <tr class="heading" v-bind:class="{ 'uk-hidden': !(ordine.progetto.isDomain || ordine.progetto.isHosting || ordine.progetto.isExchange)}">
@@ -74,36 +99,6 @@
                             <span v-if="ordine.webhosting.total>0">€{{formatPrice(ordine.webhosting.total)}}</span>
                             <span v-if="ordine.webhosting.total>0&&ordine.webhosting.totalperyear>0"><br> + </span>
                             <span v-if="ordine.webhosting.totalperyear>0">€{{formatPrice(ordine.webhosting.totalperyear)}}/anno</span></strong>
-                        </td>
-                    </tr>
-
-
-
-
-
-                    <tr class="heading" v-bind:class="{ 'uk-hidden': !ordine.progetto.isWeb}">
-                        <td colspan="2">Web design</td>
-                    </tr>
-                    <tr class="item" v-bind:class="{ 'uk-hidden': !ordine.progetto.isWeb}">
-                        <td>N° <strong>1</strong> Design sito web (1 bozza + 2 revisioni)</td>
-                        <td>€{{formatPrice(ordine.webdesign.setup.total)}}</td>
-                    </tr>
-                    <tr class="item" v-bind:class="{ 'uk-hidden': !ordine.progetto.isWeb}">
-                        <td>N° <strong>{{parseInt(ordine.webdesign.pages.qty)+parseInt(ordine.webdesign.contents.qty)}}</strong> Pagine totali</td>
-                        <td>€{{formatPrice(ordine.webdesign.pages.total+ordine.webdesign.contents.total)}}</td>
-                    </tr>
-                    <tr v-if="ordine.webdesign.hasBlog||ordine.webdesign.hasPortfolio||ordine.webdesign.hasJob||ordine.webdesign.hasEvents||ordine.webdesign.hasNewsletter" class="item">
-                        <td>N° <strong>{{ordine.webdesign.modules.qty}}</strong> Moduli aggiuntivi ({{ordine.webdesign.modules.names}})</td>
-                        <td>€{{formatPrice(ordine.webdesign.modules.total)}}</td>
-                    </tr>
-                    <tr v-if="ordine.webdesign.translations.total>0" class="item">
-                        <td>N° <strong>{{ordine.webdesign.translations.qty}}</strong> Multilingua per {{ordine.progetto.languages.qty}} lingue (pagine principali + pagine secondarie + moduli)</td>
-                        <td>€{{formatPrice(ordine.webdesign.translations.total)}}</td>
-                    </tr>
-                    <tr class="total" v-bind:class="{ 'uk-hidden': !ordine.progetto.isWeb}">
-                        <td><strong> Totale per design sito web </strong></td>
-                        <td>
-                            <strong><span v-if="ordine.webdesign.total>0">€{{formatPrice(ordine.webdesign.total)}}</span></strong>
                         </td>
                     </tr>
                     <tr class="heading" v-bind:class="{ 'uk-hidden': !ordine.progetto.isPrivacy}">
@@ -260,10 +255,10 @@
                                 Anticipo 50%, saldo alla consegna
                         </td>
                     </tr>
-                    <tr v-if="ordine.formulaZero>0">
+                    <tr v-if="ordine.formulaZero>0 && formulaZeroIsActive">
                         <td colspan="2">
                             <h4>oppure scegli <strong>Formula "0"</strong></h4>
-                            <p>Tutto quanto pagando mese per mese senza costi iniziali e d'ora in avanti il tuo sito è sempre aggiornato (impegno minimo 12 mesi)</p>
+                            <p>Tutto quanto pagando mese per mese senza costi iniziali e d'ora in avanti il tuo sito è sempre aggiornato</p>
                             <p>
                             
                                 <span>Anticipo <strong>€{{formatPrice(0)}}</strong> e paghi solo </span>
@@ -284,9 +279,16 @@ export default {
   components: {
     axios
   },
+    props: ['auth','authenticated'],
+    beforeMount:function(){
+      if(!this.authenticated){
+        router.push('/');
+      }
+    },
   data: function(){
       return{
         date:Date.now(),
+        formulaZeroIsActive: true,
         ordine: {
             anagrafica: {
                 azienda: "",
@@ -371,7 +373,7 @@ export default {
         }
       };
   },
-  created: async function() {
+  mounted: async function() {
     if (this.$route.params.id) {
       this.ordineId = this.$route.params.id;
       await this.getOrdine(this.$route.params.id);
@@ -399,7 +401,10 @@ export default {
     },
     print: function() {
         window.print();
-	}
+	},
+    toggleIsFormulaZero: function(){
+        this.formulaZeroIsActive=!this.formulaZeroIsActive;
+    }
   }
 }
 </script>
