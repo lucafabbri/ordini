@@ -218,6 +218,7 @@ export default {
         },
         mainteneance: {
           web: {
+            smart: { price: 199, recurrent: true, frequency: "year" },
             base: { price: 499, recurrent: true, frequency: "year" },
             pro: { price: 999, recurrent: true, frequency: "year" }
           },
@@ -313,6 +314,7 @@ export default {
           coordinato: {}
         },
         mainteneance: {
+          isSmart: false,
           isOrdinaria: false,
           isPerfettiva: false
         }
@@ -677,6 +679,9 @@ export default {
       return 0;
     },
     mainteneance_totalperyear: function() {
+      if (this.ordine.mainteneance.isSmart) {
+        return (this.ordine.mainteneance.totalperyear = this.pricelist.mainteneance.web.smart.price);
+      }
       if (this.ordine.mainteneance.isOrdinaria) {
         return (this.ordine.mainteneance.totalperyear = this.pricelist.mainteneance.web.base.price);
       }

@@ -225,6 +225,7 @@
                     </tr>
                     <tr class="item" v-bind:class="{ 'uk-hidden': !ordine.progetto.isMainteneance}">
                         <td>N° <strong>1</strong> Manutenzione 
+                            <span v-if="ordine.mainteneance.isSmart">(aggiornamenti di sicurezza)</span>
                             <span v-if="ordine.mainteneance.isOrdinaria">(aggiornamenti software, bugfix, integrità dei contenuti, supporto telefonico)</span>
                             <span v-if="ordine.mainteneance.isPerfettiva">(aggiornamenti software, bugfix, inserimento contenuti, supporto dedicato)</span>
                         </td>
