@@ -32,6 +32,13 @@
 <script>
 import axios from "axios/dist/axios";
 import lodash from "lodash";
+import AuthService from '../auth/AuthService';
+import router from '../router';
+
+const auth = new AuthService()
+
+const { login, logout, authenticated, authNotifier } = auth
+
 export default {
   name: "Ordini",
     props: ['auth','authenticated'],
@@ -52,6 +59,9 @@ export default {
       };
   },
   mounted: async function() {
+    if(!authenticated){
+        router.push('/');
+    }
       await this.getOrdini();
       this.$parent.title = 'Elenco ordini';
   },

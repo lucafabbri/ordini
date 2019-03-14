@@ -10,6 +10,13 @@
       :authenticated="authenticated">
     </router-view>
     <footer class="uk-margin noprint">
+      <div class="uk-container uk-text-center">
+        <ul class="uk-list uk-list-line">
+          <li>
+            <a href="/ordini">ordini</a>
+          </li>
+        </ul>
+      </div>
       <div class="uk-container uk-text-center">Copyright ©{{ new Date().getFullYear() }} Higrow Srl </div>
       <div v-if="authenticated" class="uk-container uk-text-center uk-margin uk-margin-top">
             <button type="button" class="uk-button uk-button-danger" @click="logout()"><span uk-icon="icon: sign-out"></span> Logout</button>
